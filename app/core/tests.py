@@ -44,3 +44,17 @@ class UserModelTests(TestCase):
         self.assertEqual(user.username, new_username)
         self.assertEqual(user.email, payload["email"])
         self.assertTrue(user.check_password(payload["password"]))
+
+    def test_delete_user(self):
+        payload = {
+            "first_name": "Test",
+            "last_name": "User",
+            "username": "testuser",
+            "email": "testuser@example.com",
+            "password": "testpass123",
+        }
+        user = create_user(**payload)
+        user.delete()
+        user = get_user_model().objects.filter(username=payload["username"])
+
+        self.assertFalse(user)
