@@ -25,3 +25,22 @@ class UserModelTests(TestCase):
         self.assertEqual(user.username, payload["username"])
         self.assertEqual(user.email, payload["email"])
         self.assertTrue(user.check_password(payload["password"]))
+
+    def test_partial_update_user(self):
+        payload = {
+            "first_name": "Test",
+            "last_name": "User",
+            "username": "testuser",
+            "email": "testuser@example.com",
+            "password": "testpass123",
+        }
+        new_username = "newtestuser"
+        user = create_user(**payload)
+        get_user_model().objects.update(username=new_username)
+        user.refresh_from_db()
+
+        self.assertEqual(user.first_name, payload["first_name"])
+        self.assertEqual(user.last_name, payload["last_name"])
+        self.assertEqual(user.username, new_username)
+        self.assertEqual(user.email, payload["email"])
+        self.assertTrue(user.check_password(payload["password"]))
