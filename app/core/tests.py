@@ -58,3 +58,16 @@ class UserModelTests(TestCase):
         user = get_user_model().objects.filter(username=payload["username"])
 
         self.assertFalse(user)
+
+    def test_get_user(self):
+        payload = {
+            "first_name": "Test",
+            "last_name": "User",
+            "username": "testuser",
+            "email": "testuser@example.com",
+            "password": "testpass123",
+        }
+        create_user(**payload)
+        user = get_user_model().objects.get(username=payload["username"])
+
+        self.assertTrue(user)
