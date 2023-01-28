@@ -71,3 +71,28 @@ class UserModelTests(TestCase):
         user = get_user_model().objects.get(username=payload["username"])
 
         self.assertTrue(user)
+
+    def test_get_all_users(self):
+        payload = {
+            "first_name": "Test",
+            "last_name": "User",
+            "username": "testuser",
+            "email": "testuser@example.com",
+            "password": "testpass123",
+        }
+        create_user(**payload)
+
+        payload.update(
+            {
+                "first_name": "User",
+                "last_name": "Test",
+                "username": "usertest",
+                "email": "usertest@example.com",
+                "password": "passtest123",
+            }
+        )
+        create_user(**payload)
+
+        users = get_user_model().objects.all()
+
+        self.assertEqual(users.count(), 2)
