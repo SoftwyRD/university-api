@@ -62,9 +62,7 @@ class Subject(models.Model):
     id = models.AutoField(primary_key=True, unique=True, editable=False)
     code = models.CharField(max_length=7, unique=True)
     name = models.CharField(max_length=255, unique=True)
-    credits = models.IntegerField(
-        default=0, validators=[MinValueValidator(0)]
-    )
+    credits = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     is_lab = models.BooleanField(default=False)
 
     def __str__(self) -> str:
@@ -94,9 +92,13 @@ class Selection(models.Model):
 
 class SelectionSection(models.Model):
     id = models.AutoField(primary_key=True, unique=True, editable=False)
-    selection_id = models.ForeignKey(Selection, on_delete=models.SET_NULL)
+    selection_id = models.ForeignKey(
+        Selection, on_delete=models.SET_NULL, null=True
+    )
     section = models.IntegerField(default=1, validators=[MinValueValidator(0)])
-    subject_id = models.ForeignKey(Subject, on_delete=models.SET_NULL)
+    subject_id = models.ForeignKey(
+        Subject, on_delete=models.SET_NULL, null=True
+    )
     professor = models.CharField(max_length=60)
     taken = models.BooleanField(default=False)
 
@@ -107,7 +109,9 @@ class SelectionSection(models.Model):
 class Schedule(models.Model):
     id = models.AutoField(primary_key=True, unique=True, editable=False)
     section_id = models.ForeignKey(SelectionSection, on_delete=models.CASCADE)
-    weekday_id = models.ForeignKey(Weekday, on_delete=models.SET_NULL)
+    weekday_id = models.ForeignKey(
+        Weekday, on_delete=models.SET_NULL, null=True
+    )
     start_time = models.IntegerField(
         default=7, validators=[MinValueValidator(7), MaxValueValidator(20)]
     )
