@@ -66,3 +66,11 @@ class Subject(models.Model):
 
     def __str__(self) -> str:
         return f"{self.code} - {self.name}"
+
+
+class Weekday(models.Model):
+    id = models.AutoField(primary_key=True, unique=True, editable=False)
+    name = models.CharField(max_length=10, unique=True)
+
+    def __str__(self) -> str:
+        return self.name
