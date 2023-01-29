@@ -8,6 +8,7 @@ from django.contrib.auth.models import (
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from uuid import uuid4
 
 # Create your models here.
 
@@ -77,7 +78,9 @@ class Weekday(models.Model):
 
 
 class Selection(models.Model):
-    id = models.AutoField(primary_key=True, unique=True, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid4, unique=True, editable=False
+    )
     name = models.CharField(max_length=100)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE
