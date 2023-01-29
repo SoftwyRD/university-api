@@ -6,7 +6,7 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 # Create your models here.
@@ -101,3 +101,15 @@ class SelectionSection(models.Model):
     subject_id = models.ForeignKey(Subject, on_delete=models.SET_NULL)
     professor = models.CharField(max_length=60)
     taken = models.BooleanField(default=False)
+
+
+class Schedule(models.Model):
+    id = models.AutoField(primary_key=True, unique=True, editable=False)
+    section_id = models.ForeignKey(SelectionSection, on_delete=models.CASCADE)
+    weekday_id = models.ForeignKey(Weekday, on_delete=models.SET_NULL)
+    start_time = models.IntegerChoices(
+        default=7, validators=[MinValueValidator("7"), MaxValueValidator("20")]
+    )
+    end_time = models.IntegerChoices(
+        default=9, validators=[MinValueValidator("9"), MaxValueValidator("22")]
+    )
