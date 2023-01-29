@@ -52,7 +52,7 @@ class User(AbstractUser, PermissionsMixin):
 
     objects = UserManager()
 
-    REQUIRED_FIELDS = ["first_name", "last_name", "username", "email"]
+    REQUIRED_FIELDS = ["first_name", "last_name", "email"]
 
     def __str__(self) -> str:
         return self.username
@@ -95,9 +95,7 @@ class Selection(models.Model):
 class SelectionSection(models.Model):
     id = models.AutoField(primary_key=True, unique=True, editable=False)
     selection_id = models.ForeignKey(Selection, on_delete=models.SET_NULL)
-    section = models.IntegerField(
-        default=1, validators=[MinValueValidator(0)]
-    )
+    section = models.IntegerField(default=1, validators=[MinValueValidator(0)])
     subject_id = models.ForeignKey(Subject, on_delete=models.SET_NULL)
     professor = models.CharField(max_length=60)
     taken = models.BooleanField(default=False)
