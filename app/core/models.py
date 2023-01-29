@@ -102,14 +102,20 @@ class SelectionSection(models.Model):
     professor = models.CharField(max_length=60)
     taken = models.BooleanField(default=False)
 
+    def __str__(self) -> str:
+        return f"{self.selection_id.name}{self.section}"
+
 
 class Schedule(models.Model):
     id = models.AutoField(primary_key=True, unique=True, editable=False)
     section_id = models.ForeignKey(SelectionSection, on_delete=models.CASCADE)
     weekday_id = models.ForeignKey(Weekday, on_delete=models.SET_NULL)
-    start_time = models.IntegerChoices(
+    start_time = models.IntegerField(
         default=7, validators=[MinValueValidator("7"), MaxValueValidator("20")]
     )
-    end_time = models.IntegerChoices(
+    end_time = models.IntegerField(
         default=9, validators=[MinValueValidator("9"), MaxValueValidator("22")]
     )
+
+    def __str__(self) -> str:
+        return str(self.id)
