@@ -63,7 +63,7 @@ class Subject(models.Model):
     code = models.CharField(max_length=7, unique=True)
     name = models.CharField(max_length=255, unique=True)
     credits = models.IntegerField(
-        default=0, validators=[MinValueValidator("0")]
+        default=0, validators=[MinValueValidator(0)]
     )
     is_lab = models.BooleanField(default=False)
 
