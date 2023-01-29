@@ -1,65 +1,69 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
-from core.models import Subject
+from core.models import Selection
 
 PAYLOAD = {
-    "code": "TST101",
     "name": "Test Subject",
-    "credits": 3,
-    "is_lab": False,
 }
 
 
-def create_subject(**params):
-    subject = Subject.objects.create(**params)
-    return subject
+def create_selection(**params):
+    selection = Selection.objects.create(**params)
+    return selection
+
+
+def create_user(**params):
+    defauls = {
+        "first_name": "Test",
+        "last_name": "User",
+        "username": "testuser",
+        "email": "testuser@example.com",
+        "password": "testpass123",
+    }
+    defauls.update(**params)
+    user = get_user_model().objects.create(**defauls)
+    return user
 
 
 class SubjectModelTests(TestCase):
-    def test_create_subject_success(self):
-        subject = create_subject(**PAYLOAD)
+    def setUp(self) -> None:
+        user = create_user()
+        PAYLOAD.update({"user": user})
 
-        self.assertEqual(subject.code, PAYLOAD["code"])
-        self.assertEqual(subject.name, PAYLOAD["name"])
-        self.assertEqual(subject.credits, PAYLOAD["credits"])
-        self.assertEqual(subject.is_lab, PAYLOAD["is_lab"])
+    def test_create_selection_success(self):
+        selection = create_selection(**PAYLOAD)
 
-    def test_partial_update_subject(self):
-        new_credits = 4
-        subject = create_subject(**PAYLOAD)
-        Subject.objects.update(credits=new_credits)
-        subject.refresh_from_db()
+        self.assertEqual(selection.name, PAYLOAD["name"])
+        self.assertEqual(selection.user, PAYLOAD["user"])
 
-        self.assertEqual(subject.code, PAYLOAD["code"])
-        self.assertEqual(subject.name, PAYLOAD["name"])
-        self.assertEqual(subject.credits, new_credits)
-        self.assertEqual(subject.is_lab, PAYLOAD["is_lab"])
+    def test_partial_update_selection(self):
+        new_name = "Another selection"
+        selection = create_selection(**PAYLOAD)
+        Selection.objects.update(name=new_name)
+        selection.refresh_from_db()
 
-    def test_delete_subject(self):
-        subject = create_subject(**PAYLOAD)
-        subject.delete()
-        subject = Subject.objects.filter(credits=PAYLOAD["credits"])
+        self.assertEqual(selection.name, PAYLOAD["name"])
+        self.assertEqual(selection.user, PAYLOAD["user"])
 
-        self.assertFalse(subject)
+    def test_delete_selection(self):
+        selection = create_selection(**PAYLOAD)
+        selection.delete()
+        selection = Selection.objects.filter(name=PAYLOAD["name"])
 
-    def test_get_subject(self):
-        create_subject(**PAYLOAD)
-        subject = Subject.objects.get(credits=PAYLOAD["credits"])
+        self.assertFalse(selection)
 
-        self.assertTrue(subject)
+    def test_get_selection(self):
+        create_selection(**PAYLOAD)
+        selection = Selection.objects.get(name=PAYLOAD["name"])
 
-    def test_get_all_subjects(self):
-        create_subject(**PAYLOAD)
+        self.assertTrue(selection)
 
-        PAYLOAD.update(
-            {
-                "code": "TS5101L",
-                "name": "Test Subject Laboratory",
-                "credits": 4,
-                "is_lab": True,
-            }
-        )
-        create_subject(**PAYLOAD)
+    def test_get_all_selections(self):
+        create_selection(**PAYLOAD)
 
-        subjects = Subject.objects.all()
+        PAYLOAD.update({"name": "Another selection"})
+        create_selection(**PAYLOAD)
 
-        self.assertEqual(subjects.count(), 2)
+        selections = Selection.objects.all()
+
+        self.assertEqual(selections.count(), 2)
