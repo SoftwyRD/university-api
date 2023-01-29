@@ -96,7 +96,7 @@ class SelectionSection(models.Model):
     id = models.AutoField(primary_key=True, unique=True, editable=False)
     selection_id = models.ForeignKey(Selection, on_delete=models.SET_NULL)
     section = models.IntegerField(
-        default=1, validators=[MinValueValidator("0")]
+        default=1, validators=[MinValueValidator(0)]
     )
     subject_id = models.ForeignKey(Subject, on_delete=models.SET_NULL)
     professor = models.CharField(max_length=60)
@@ -111,10 +111,10 @@ class Schedule(models.Model):
     section_id = models.ForeignKey(SelectionSection, on_delete=models.CASCADE)
     weekday_id = models.ForeignKey(Weekday, on_delete=models.SET_NULL)
     start_time = models.IntegerField(
-        default=7, validators=[MinValueValidator("7"), MaxValueValidator("20")]
+        default=7, validators=[MinValueValidator(7), MaxValueValidator(20)]
     )
     end_time = models.IntegerField(
-        default=9, validators=[MinValueValidator("9"), MaxValueValidator("22")]
+        default=9, validators=[MinValueValidator(9), MaxValueValidator(22)]
     )
 
     def __str__(self) -> str:
