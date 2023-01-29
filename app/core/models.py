@@ -90,3 +90,14 @@ class Selection(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class SelectionSection(models.Model):
+    id = models.AutoField(primary_key=True, unique=True, editable=False)
+    selection_id = models.ForeignKey(Selection, on_delete=models.SET_NULL)
+    section = models.IntegerField(
+        default=1, validators=[MinValueValidator("0")]
+    )
+    subject_id = models.ForeignKey(Subject, on_delete=models.SET_NULL)
+    professor = models.CharField(max_length=60)
+    taken = models.BooleanField(default=False)
