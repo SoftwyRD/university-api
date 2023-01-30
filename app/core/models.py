@@ -8,6 +8,7 @@ from django.contrib.auth.models import (
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from uuid import uuid4
 
 # Create your models here.
 
@@ -40,9 +41,8 @@ class UserManager(BaseUserManager):
 class User(AbstractUser, PermissionsMixin):
     id = models.AutoField(primary_key=True, unique=True, editable=False)
     first_name = models.CharField(max_length=50)
-    middle_name = models.CharField(max_length=50)
-    first_surname = models.CharField(max_length=50)
-    second_surname = models.CharField(max_length=50)
+    middle_name = models.CharField(max_length=50, null=True)
+    last_name = models.CharField(max_length=50)
     username = models.CharField(
         max_length=20,
         unique=True,
@@ -78,9 +78,11 @@ class Weekday(models.Model):
 
 
 class Selection(models.Model):
-    id = models.AutoField(primary_key=True, unique=True, editable=False)
+    id = models.UUIDField(
+        primary_key=True, default=uuid4, unique=True, editable=False
+    )
     name = models.CharField(max_length=100)
-    user_id = models.ForeignKey(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE
     )
     created_on = models.DateTimeField(auto_now_add=True)
@@ -92,26 +94,22 @@ class Selection(models.Model):
 
 class SelectionSection(models.Model):
     id = models.AutoField(primary_key=True, unique=True, editable=False)
-    selection_id = models.ForeignKey(
+    selection = models.ForeignKey(
         Selection, on_delete=models.SET_NULL, null=True
     )
     section = models.IntegerField(default=1, validators=[MinValueValidator(0)])
-    subject_id = models.ForeignKey(
-        Subject, on_delete=models.SET_NULL, null=True
-    )
+    subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True)
     professor = models.CharField(max_length=60)
     taken = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return f"{self.selection_id.name}{self.section}"
+        return f"{self.selection.name}{self.section}"
 
 
 class Schedule(models.Model):
     id = models.AutoField(primary_key=True, unique=True, editable=False)
-    section_id = models.ForeignKey(SelectionSection, on_delete=models.CASCADE)
-    weekday_id = models.ForeignKey(
-        Weekday, on_delete=models.SET_NULL, null=True
-    )
+    section = models.ForeignKey(SelectionSection, on_delete=models.CASCADE)
+    weekday = models.ForeignKey(Weekday, on_delete=models.SET_NULL, null=True)
     start_time = models.IntegerField(
         default=7, validators=[MinValueValidator(7), MaxValueValidator(20)]
     )
