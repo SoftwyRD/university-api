@@ -49,6 +49,30 @@ class PublicUserApiTests(TestCase):
         self.assertNotIn("password", user)
         self.assertEqual(user["username"], PAYLOAD["username"])
 
+    def test_login_success(self):
+        PAYLOAD = {
+            "username": self.PAYLOAD["username"],
+            "password": self.PAYLOAD["password"],
+        }
+
+        res = self.client.post(LOGIN_URL, PAYLOAD)
+        data = res.data
+
+        res_status = data["status"]
+        res_data = data["data"]
+        tokens = res_data["tokens"]
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertIn("status", data)
+        self.assertEqual(res_status, "success")
+
+        self.assertIn("data", data)
+        self.assertIn("tokens", res_data)
+
+        self.assertIn("access", tokens)
+        self.assertIn("refresh", tokens)
+
     def test_login_not_registered(self):
         PAYLOAD = {
             "username": "not_an_valid_user",
@@ -84,30 +108,6 @@ class PrivateUserApiTests(TestCase):
             "password": "testpass123",
         }
         self.user = get_user_model().objects.create(**self.PAYLOAD)
-
-    def test_login_success(self):
-        PAYLOAD = {
-            "username": self.PAYLOAD["username"],
-            "password": self.PAYLOAD["password"],
-        }
-
-        res = self.client.post(LOGIN_URL, PAYLOAD)
-        data = res.data
-
-        res_status = data["status"]
-        res_data = data["data"]
-        tokens = res_data["tokens"]
-
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-        self.assertIn("status", data)
-        self.assertEqual(res_status, "success")
-
-        self.assertIn("data", data)
-        self.assertIn("tokens", res_data)
-
-        self.assertIn("access", tokens)
-        self.assertIn("refresh", tokens)
 
     def test_retrieve_profile_success(self):
         res = self.client.get(ME_URL)
