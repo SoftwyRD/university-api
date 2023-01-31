@@ -36,8 +36,8 @@ class UserPublicApiTests(TestCase):
 
     def test_login_not_registered(self):
         PAYLOAD = {
-            "username": "testuser",
-            "password": "badpass",
+            "username": "not_an_user",
+            "password": "not_a_pass",
         }
 
         res = self.client.post(LOGIN_URL, PAYLOAD)
@@ -49,3 +49,4 @@ class UserPublicApiTests(TestCase):
         self.assertEqual(res_status, "success")
         self.assertIn("access", tokens)
         self.assertIn("refresh", tokens)
+
