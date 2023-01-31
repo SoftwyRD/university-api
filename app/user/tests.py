@@ -36,17 +36,16 @@ class UserPublicApiTests(TestCase):
 
     def test_login_not_registered(self):
         PAYLOAD = {
-            "username": "not_an_user",
-            "password": "not_a_pass",
+            "username": "not_an_valid_user",
+            "password": "not_a_valid_password",
         }
 
         res = self.client.post(LOGIN_URL, PAYLOAD)
         res_status = res.data["status"]
         res_data = res.data["data"]
-        tokens = res_data["tokens"]
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(res_status, "success")
-        self.assertIn("access", tokens)
-        self.assertIn("refresh", tokens)
-
+        self.assertEqual(res_status, "fail")
+        self.assertNotIn("tokens", res_data)
+        self.assertIn("title", res_data)
+        self.assertIn("message", res_data)
