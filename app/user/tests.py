@@ -109,6 +109,30 @@ class PrivateUserApiTests(TestCase):
         self.assertIn("access", tokens)
         self.assertIn("refresh", tokens)
 
+    def test_retrieve_profile_success(self):
+        res = self.client.get(ME_URL)
+        data = res.data
+
+        res_status = data["status"]
+        res_data = data["data"]
+        profile = res_data["profile"]
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertIn("status", data)
+        self.assertEqual(res_status, "success")
+
+        self.assertIn("data", data)
+        self.assertIn("profile", res_data)
+
+        self.assertIn("first_name", profile)
+        self.assertIn("middle_name", profile)
+        self.assertIn("last_name", profile)
+        self.assertIn("username", profile)
+        self.assertIn("email", profile)
+
+        self.assertNotIn("password", profile)
+
 
 class AdminUserApiTests(TestCase):
     def setUp(self) -> None:
