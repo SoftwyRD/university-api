@@ -124,18 +124,20 @@ class AdminUserApiTests(TestCase):
         self.admin = get_user_model().objects.create_superuser(**PAYLOAD)
         self.force_authenticate(self.admin)
 
-    def test_get_user(self):
-        PAYLOAD = {
-            "first_name": "Another",
-            "middle_name": "User",
-            "last_name": "Name",
-            "username": "seconduser",
-            "email": "seconduser@example.com",
-            "password": "testpass123",
-        }
-        user = get_user_model().objects.create(**PAYLOAD)
+        PAYLOAD.update(
+            {
+                "first_name": "Another",
+                "middle_name": "User",
+                "last_name": "Name",
+                "username": "seconduser",
+                "email": "seconduser@example.com",
+                "password": "testpass123",
+            }
+        )
+        self.user = get_user_model().objects.create(**PAYLOAD)
 
-        USER_DETAIL_URL = user_detail_url(user.id)
+    def test_get_user(self):
+        USER_DETAIL_URL = user_detail_url(self.user.id)
 
         res = self.client.get(USER_DETAIL_URL)
         data = res.data
@@ -152,27 +154,18 @@ class AdminUserApiTests(TestCase):
         self.assertIn("data", data)
         self.assertIn("user", res_data)
 
-        self.assertEqual(res_user["first_name"], user["first_name"])
-        self.assertEqual(res_user["middle_name"], user["middle_name"])
-        self.assertEqual(res_user["last_name"], user["last_name"])
-        self.assertEqual(res_user["username"], user["username"])
-        self.assertEqual(res_user["email"], user["email"])
+        self.assertEqual(res_user["first_name"], self.user["first_name"])
+        self.assertEqual(res_user["middle_name"], self.user["middle_name"])
+        self.assertEqual(res_user["last_name"], self.user["last_name"])
+        self.assertEqual(res_user["username"], self.user["username"])
+        self.assertEqual(res_user["email"], self.user["email"])
 
         self.assertNotIn("password", res_user)
 
     def test_get_all_users(self):
-        PAYLOAD = {
-            "first_name": "Another",
-            "middle_name": "User",
-            "last_name": "Name",
-            "username": "seconduser",
-            "email": "seconduser@example.com",
-            "password": "testpass123",
-        }
-        user = get_user_model().objects.create(**PAYLOAD)
         users = get_user_model().objects.all()
 
-        USER_DETAIL_URL = user_detail_url(user.id)
+        USER_DETAIL_URL = user_detail_url(self.user.id)
 
         res = self.client.get(USER_DETAIL_URL)
         data = res.data
@@ -193,11 +186,11 @@ class AdminUserApiTests(TestCase):
 
         self.assertIn("users", res_data)
 
-        for u in res_users:
-            self.assertIn("first_name", u)
-            self.assertIn("middle_name", u)
-            self.assertIn("last_name", u)
-            self.assertIn("username", u)
-            self.assertIn("email", u)
+        for user in res_users:
+            self.assertIn("first_name", user)
+            self.assertIn("middle_name", user)
+            self.assertIn("last_name", user)
+            self.assertIn("username", user)
+            self.assertIn("email", user)
 
-            self.assertNotIn("password", u)
+            self.assertNotIn("password", user)
