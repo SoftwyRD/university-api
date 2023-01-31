@@ -34,7 +34,7 @@ class UserPublicApiTests(TestCase):
         self.assertEqual(user["username"], PAYLOAD["username"])
         self.assertNotIn("password", user)
 
-    def test_login_wrong_credentials(self):
+    def test_login_not_registered(self):
         PAYLOAD = {
             "username": "testuser",
             "password": "badpass",
