@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -9,7 +10,7 @@ USER_URL = reverse("user")
 LOGIN_URL = reverse("user:login")
 
 
-class UserPublicApiTests(TestCase):
+class PublicUserApiTests(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
 
@@ -49,3 +50,40 @@ class UserPublicApiTests(TestCase):
         self.assertNotIn("tokens", res_data)
         self.assertIn("title", res_data)
         self.assertIn("message", res_data)
+
+
+class PrivateUserApiTests(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+
+        self.PAYLOAD = {
+            "first_name": "Test",
+            "last_name": "User",
+            "username": "testuser",
+            "email": "testuser@example.com",
+            "password": "testpass123",
+        }
+        self.user = get_user_model().objects.create(**self.PAYLOAD)
+
+    def test_login_success(self):
+        PAYLOAD = {
+            "username": self.PAYLOAD["username"],
+            "password": self.PAYLOAD["password"],
+        }
+
+        res = self.client.post(LOGIN_URL, PAYLOAD)
+        data = res.data
+        res_status = data["status"]
+        res_data = data["data"]
+        tokens = res_data["tokens"]
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertIn("status", data)
+        self.assertEqual(res_status, "success")
+
+        self.assertIn("data", data)
+        self.assertIn("tokens", res_data)
+
+        self.assertIn("access", tokens)
+        self.assertIn("refresh", tokens)
