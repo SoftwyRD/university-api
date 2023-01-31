@@ -8,6 +8,7 @@ from rest_framework.test import APIClient
 
 USER_URL = reverse("user")
 LOGIN_URL = reverse("user:login")
+ME_URL = reverse("user:me")
 
 
 def user_detail_url(user_id):
@@ -158,3 +159,45 @@ class AdminUserApiTests(TestCase):
         self.assertEqual(res_user["email"], user["email"])
 
         self.assertNotIn("password", res_user)
+
+    def test_get_all_users(self):
+        PAYLOAD = {
+            "first_name": "Another",
+            "middle_name": "User",
+            "last_name": "Name",
+            "username": "seconduser",
+            "email": "seconduser@example.com",
+            "password": "testpass123",
+        }
+        user = get_user_model().objects.create(**PAYLOAD)
+        users = get_user_model().objects.all()
+
+        USER_DETAIL_URL = user_detail_url(user.id)
+
+        res = self.client.get(USER_DETAIL_URL)
+        data = res.data
+
+        res_status = data["status"]
+        res_data = data["data"]
+        res_users = res_data["users"]
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertIn("status", data)
+        self.assertEqual(res_status, "success")
+
+        self.assertIn("data", data)
+        self.assertIn("count", res_data)
+        self.assertEqual(res_data["count"], len(res_users))
+        self.assertEqual(len(res_users), len(users))
+
+        self.assertIn("users", res_data)
+
+        for u in res_users:
+            self.assertIn("first_name", u)
+            self.assertIn("middle_name", u)
+            self.assertIn("last_name", u)
+            self.assertIn("username", u)
+            self.assertIn("email", u)
+
+            self.assertNotIn("password", u)
