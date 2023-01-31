@@ -24,16 +24,25 @@ class PublicUserApiTests(TestCase):
         }
 
         res = self.client.post(USER_URL, PAYLOAD)
-        res_status = res.data["status"]
-        res_data = res.data["data"]
+        data = res.data
+
+        res_status = data["status"]
+        res_data = data["data"]
         user = res_data["user"]
+
         user_location = f"/api/users/{user.id}/"
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(res["Location"], user_location)
+
+        self.assertIn("status", data)
         self.assertEqual(res_status, "success")
-        self.assertEqual(user["username"], PAYLOAD["username"])
+
+        self.assertIn("data", data)
+        self.assertIn("user", res_data)
+
         self.assertNotIn("password", user)
+        self.assertEqual(user["username"], PAYLOAD["username"])
 
     def test_login_not_registered(self):
         PAYLOAD = {
@@ -42,11 +51,17 @@ class PublicUserApiTests(TestCase):
         }
 
         res = self.client.post(LOGIN_URL, PAYLOAD)
-        res_status = res.data["status"]
-        res_data = res.data["data"]
+        data = res.data
+
+        res_status = data["status"]
+        res_data = data["data"]
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        self.assertIn("status", data)
         self.assertEqual(res_status, "fail")
+
+        self.assertIn("data", data)
         self.assertNotIn("tokens", res_data)
         self.assertIn("title", res_data)
         self.assertIn("message", res_data)
@@ -73,6 +88,7 @@ class PrivateUserApiTests(TestCase):
 
         res = self.client.post(LOGIN_URL, PAYLOAD)
         data = res.data
+
         res_status = data["status"]
         res_data = data["data"]
         tokens = res_data["tokens"]
