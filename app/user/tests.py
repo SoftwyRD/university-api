@@ -10,6 +10,10 @@ USER_URL = reverse("user")
 LOGIN_URL = reverse("user:login")
 
 
+def user_detail_url(user_id):
+    return reverse("user:detail", args=[user_id])
+
+
 class PublicUserApiTests(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
@@ -103,3 +107,54 @@ class PrivateUserApiTests(TestCase):
 
         self.assertIn("access", tokens)
         self.assertIn("refresh", tokens)
+
+
+class AdminUserApiTests(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+
+        PAYLOAD = {
+            "first_name": "Test",
+            "last_name": "User",
+            "username": "testuser",
+            "email": "testuser@example.com",
+            "password": "testpass123",
+        }
+        self.admin = get_user_model().objects.create_superuser(**PAYLOAD)
+        self.force_authenticate(self.admin)
+
+    def test_get_user(self):
+        PAYLOAD = {
+            "first_name": "Another",
+            "middle_name": "User",
+            "last_name": "Name",
+            "username": "seconduser",
+            "email": "seconduser@example.com",
+            "password": "testpass123",
+        }
+        user = get_user_model().objects.create(**PAYLOAD)
+
+        USER_DETAIL_URL = user_detail_url(user.id)
+
+        res = self.client.get(USER_DETAIL_URL)
+        data = res.data
+
+        res_status = data["status"]
+        res_data = data["data"]
+        res_user = res_data["user"]
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertIn("status", data)
+        self.assertEqual(res_status, "success")
+
+        self.assertIn("data", data)
+        self.assertIn("user", res_data)
+
+        self.assertEqual(res_user["first_name"], user["first_name"])
+        self.assertEqual(res_user["middle_name"], user["middle_name"])
+        self.assertEqual(res_user["last_name"], user["last_name"])
+        self.assertEqual(res_user["username"], user["username"])
+        self.assertEqual(res_user["email"], user["email"])
+
+        self.assertNotIn("password", res_user)
