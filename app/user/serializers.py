@@ -1,5 +1,9 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import (
+    TokenObtainPairSerializer,
+    RefreshToken,
+)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -33,3 +37,29 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
+
+
+class PairTokenSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        response = {
+            "status": "success",
+            "data": {
+                "tokens": data,
+            },
+        }
+
+        return response
+
+
+class RefreshTokenSerializer(RefreshToken):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        response = {
+            "status": "success",
+            "data": {
+                "token": data,
+            },
+        }
+
+        return response
