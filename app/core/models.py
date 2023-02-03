@@ -15,7 +15,13 @@ from uuid import uuid4
 
 class UserManager(BaseUserManager):
     def create(
-        self, first_name, middle_name, last_name, username, email, password
+        self,
+        first_name,
+        last_name,
+        username,
+        email,
+        password,
+        middle_name=None,
     ) -> User:
         user = self.model(
             first_name=first_name,
