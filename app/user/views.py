@@ -136,3 +136,18 @@ class UserDetailsView(APIView):
                 "message": ex,
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class MeView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer = serializers.UserSerializer
+
+    def get(self, request, format=None):
+        user = request.user
+        response = {
+            "status": "success",
+            "data": {
+                "user": user,
+            },
+        }
+        return Response(response, status.HTTP_200_OK)
