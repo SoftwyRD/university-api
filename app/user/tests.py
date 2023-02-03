@@ -6,8 +6,10 @@ from rest_framework.test import APIClient
 
 # Create your tests here.
 
-USER_URL = reverse("user")
-LOGIN_URL = reverse("user:login")
+LOGIN_URL = reverse("user:pair-token")
+LOGIN_REFRESH_URL = reverse("user:refresh-token")
+USER_LIST_URL = reverse("user:list")
+USER_DETAILS_URL = reverse("user:details")
 ME_URL = reverse("user:me")
 
 
