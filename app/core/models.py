@@ -36,12 +36,22 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(
-        self, first_name, last_name, username, email, password
+        self,
+        first_name,
+        last_name,
+        username,
+        email,
+        password,
+        middle_name=None,
     ) -> User:
-        user = self.create(first_name, last_name, username, email, password)
+        user = self.create(
+            first_name, last_name, username, email, password, middle_name
+        )
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
+
+        return user
 
     def normalize_email(self, email: str):
         return email.lower()
