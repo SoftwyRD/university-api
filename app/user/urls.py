@@ -10,4 +10,7 @@ urlpatterns = [
         views.RefreshTokenView().as_view(),
         name="refresh-token",
     ),
+    path("", views.UserListView().as_view(), name="user-list"),
+    path("<int:id>/", views.UserDetailsView().as_view(), name="user-details"),
+    path("me/", views.MeView().as_view(), name="me"),
 ]
