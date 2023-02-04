@@ -80,7 +80,7 @@ class UserDetailsView(APIView):
     permission_classes = [IsAdminUser]
     serializer = serializers.UserSerializer
 
-    def get_object(self, id):
+    def get(self, request, id, format=None):
         try:
             user = get_user_model().objects.get(id=id)
             serializer = self.serializer(user, many=False)
@@ -144,10 +144,11 @@ class MeView(APIView):
 
     def get(self, request, format=None):
         user = request.user
+        serializer = self.serializer(user, many=False)
         response = {
             "status": "success",
             "data": {
-                "user": user,
+                "profile": serializer.data,
             },
         }
         return Response(response, status.HTTP_200_OK)
