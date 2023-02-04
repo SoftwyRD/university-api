@@ -7,7 +7,15 @@ from subject.serializers import SubjectSerializer
 
 class Subjects(views.APIView):
     """Vieqw for list subjects in api"""
-    subjects = SubjectModel.objects.all()
 
     def get(self, req, format=None):
-        return Response(self.subjects)
+        subjects = SubjectModel.objects.all()
+        serializer = SubjectSerializer(subjects, many=True)
+        response = {
+            "status": "success",
+            "data": {
+                "count": subjects.count(),
+                "subjects": serializer.data,
+            }
+        }
+        return Response(response, status=status.HTTP_200_OK)
