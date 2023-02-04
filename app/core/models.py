@@ -33,6 +33,7 @@ class UserManager(BaseUserManager):
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
+        return user
 
     def normalize_email(self, email: str):
         return email.lower()
