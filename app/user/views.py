@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from rest_framework import status
+from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,6 +14,10 @@ from user import serializers
 # Create your views here.
 
 
+def user_location_url(user_id):
+    return reverse("user:details", args=[user_id])
+
+
 class PairTokenView(TokenObtainPairView):
     serializer_class = serializers.PairTokenSerializer
 
@@ -21,9 +27,9 @@ class RefreshTokenView(TokenRefreshView):
 
 
 class UserListView(APIView):
-    permission_classes = [IsAdminUser]
     serializer = serializers.UserSerializer
 
+    @permission_classes([IsAdminUser])
     def get(self, request, format=None):
         try:
             users = get_user_model().objects.all()
@@ -51,13 +57,20 @@ class UserListView(APIView):
 
             if serializer.is_valid():
                 serializer.save()
+                user = serializer.data
+
+                headers = {
+                    "Location": user_location_url(user["id"]),
+                }
                 response = {
                     "status": "success",
                     "data": {
-                        "user": serializer.data,
+                        "user": user,
                     },
                 }
-                return Response(response, status.HTTP_200_OK)
+                return Response(
+                    response, status.HTTP_201_CREATED, headers=headers
+                )
 
             response = {
                 "status": "fail",
