@@ -9,9 +9,9 @@ from django.contrib.auth.decorators import login_required
 
 
 class Subjects(views.APIView):
-    """View for list subjects in api"""
-    permission_classes = [IsAdminUser]
-    permission_classes = [IsAuthenticated]
+    # """View for list subjects in api"""
+    # permission_classes = [IsAdminUser]
+    # permission_classes = [IsAuthenticated]
 
     serializer = SubjectSerializer
 
@@ -64,4 +64,7 @@ class Subjects(views.APIView):
                 "status": "error",
                 "message": ex,
             }
+
+            print(ex)
+
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
