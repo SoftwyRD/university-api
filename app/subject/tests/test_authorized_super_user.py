@@ -20,7 +20,18 @@ class AuthorizedTests(APITestCase):
 
         self.client.force_authenticate(self.user)
 
-    def test_get_models(self):
+    def test_get_subject(self):
         res = self.client.get(SUBJECTS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_create_subject(self):
+        payload = {
+            'code': 'IDS222',
+            'name': 'Desarrollo de Software 1',
+            'credits': 4,
+            'is_lab': 0,
+        }
+        res = self.client.post(SUBJECTS_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)

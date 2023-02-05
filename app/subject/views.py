@@ -24,3 +24,5 @@ class Subjects(views.APIView):
             }
         }
         return Response(response, status=status.HTTP_200_OK)
+
+    def post(self, req, format=None):
