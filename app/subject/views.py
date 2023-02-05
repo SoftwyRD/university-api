@@ -13,16 +13,55 @@ class Subjects(views.APIView):
     permission_classes = [IsAdminUser]
     permission_classes = [IsAuthenticated]
 
+    serializer = SubjectSerializer
+
     def get(self, req, format=None):
-        subjects = SubjectModel.objects.all()
-        serializer = SubjectSerializer(subjects, many=True)
-        response = {
-            "status": "success",
-            "data": {
-                "count": subjects.count(),
-                "subjects": serializer.data,
+        try:
+            subjects = SubjectModel.objects.all()
+            serializer = SubjectSerializer(subjects, many=True)
+            response = {
+                "status": "success",
+                "data": {
+                    "count": subjects.count(),
+                    "subjects": serializer.data,
+                }
             }
-        }
-        return Response(response, status=status.HTTP_200_OK)
+            return Response(response, status=status.HTTP_200_OK)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "message": ex,
+            }
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, req, format=None):
+        try:
+            data = req.data
+            serializer = self.serializer(data=data, many=False)
+
+            if serializer.is_valid():
+                serializer.save()
+                subject = serializer.data
+
+                response = {
+                    "status": "success",
+                    "data": {
+                        "subject": subject,
+                    },
+                }
+                return Response(response, status.HTTP_201_CREATED)
+
+            response = {
+                "status": "fail",
+                "data": {
+                    "title": "Could not create this subject",
+                    "message": serializer.errors,
+                },
+            }
+            return Response(response, status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "message": ex,
+            }
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
