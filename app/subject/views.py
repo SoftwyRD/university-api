@@ -121,7 +121,8 @@ class SubjectDetailView(views.APIView):
                 subject = SubjectModel.objects.get(code=code)
                 data = req.data
 
-                serializer = self.serializer(subject, data=data, many=False)
+                serializer = self.serializer(
+                    subject, data=data, many=False, partial=True)
 
                 if serializer.is_valid():
                     serializer.save()

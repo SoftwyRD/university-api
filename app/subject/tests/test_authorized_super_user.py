@@ -116,3 +116,37 @@ class AuthorizedTests(APITestCase):
                          ["code"], payload["code"])
         self.assertEqual(res.data["data"]["subject"]
                          ["id"],  subject.data["data"]["subject"]["id"])
+
+    def test_patch_unexisting_subject(self):
+        payload = {
+            'code': 'IDS224',
+            'name': 'Desarrollo de Software 3',
+            'credits': 4,
+            'is_lab': 0,
+        }
+
+        res = self.client.patch(detail_url("111111"), payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_patch_existing_subject_with_not_complete_payload(self):
+        subject = self.client.post(SUBJECTS_URL, self.payload)
+
+        payload = {
+            'code': 'IDS224',
+            'credits': 3,
+            'is_lab': 0,
+        }
+
+        res = self.client.patch(detail_url(
+            subject.data["data"]["subject"]["code"]), payload)
+        res1 = self.client.get(detail_url(payload["code"]))
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(res1.data["data"]["subject"]
+                         ["name"], self.payload["name"])
+        self.assertEqual(res1.data["data"]["subject"]
+                         ["code"], payload["code"])
+        self.assertEqual(res1.data["data"]["subject"]
+                         ["credits"], payload["credits"])
