@@ -40,5 +40,13 @@ class SubjectUnauthenticatedTests(TestCase):
         res = self.client.get(SUBJECT_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        # self.assertNotEqual(
-        # subject.code, res.data["data"]["subjects"][0]['code'])
+
+    def test_delete_subject(self):
+        res = self.client.delete(detail_url("111111"))
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_patch_subject(self):
+        res = self.client.patch(detail_url("111111"))
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)

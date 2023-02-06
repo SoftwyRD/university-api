@@ -95,4 +95,25 @@ class AuthorizedTests(APITestCase):
     def test_delete_unexisting_subject(self):
         res = self.client.delete(detail_url("111111"))
 
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_patch_existing_subject(self):
+        subject = self.client.post(SUBJECTS_URL, self.payload)
+
+        payload = {
+            'code': 'IDS224',
+            'name': 'Desarrollo de Software 3',
+            'credits': 4,
+            'is_lab': 0,
+        }
+
+        res = self.client.patch(detail_url(
+            subject.data["data"]["subject"]["code"]), payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data["data"]["subject"]
+                         ["name"], payload["name"])
+        self.assertEqual(res.data["data"]["subject"]
+                         ["code"], payload["code"])
+        self.assertEqual(res.data["data"]["subject"]
+                         ["id"],  subject.data["data"]["subject"]["id"])

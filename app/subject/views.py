@@ -114,6 +114,44 @@ class SubjectDetailView(views.APIView):
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def patch(self, req, code, format=None):
+        try:
+            if SubjectModel.objects.filter(code=code):
+                subject = SubjectModel.objects.get(code=code)
+                data = req.data
+
+                serializer = self.serializer(subject, data=data, many=False)
+
+                if serializer.is_valid():
+                    serializer.save()
+
+                response = {
+                    "status": "success",
+                    "data": {
+                        "subject": serializer.data,
+                    },
+                }
+
+                return Response(response, status.HTTP_200_OK)
+
+            response = {
+                "status": "error",
+                "data": {
+                    "message": "Subject does not exist",
+                },
+            }
+
+            return Response(response, status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            response = {
+                "status": "fail",
+                "data": {
+                    "message": ex,
+                },
+            }
+
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     def delete(self, req, code, format=None):
         try:
             if SubjectModel.objects.filter(code=code):
@@ -131,7 +169,7 @@ class SubjectDetailView(views.APIView):
                 "message": "Subject does not exist",
             }
 
-            return Response(response, status.HTTP_404_NOT_FOUND)
+            return Response(response, status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
             response = {
                 "status": "fail",
