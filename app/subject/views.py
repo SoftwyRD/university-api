@@ -1,11 +1,12 @@
 from rest_framework import status, views
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, BasePermission, SAFE_METHODS
+from rest_framework.permissions import (
+    IsAdminUser,
+    BasePermission,
+    SAFE_METHODS)
 
 from core.models import Subject as SubjectModel
 from subject.serializers import SubjectSerializer
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.decorators import login_required
 
 
 class ReadOnly(BasePermission):

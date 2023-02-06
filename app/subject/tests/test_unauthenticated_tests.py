@@ -3,7 +3,7 @@ from core.models import Subject as SubjectModel
 # from subject.serializers import SubjectSerializer
 from rest_framework.reverse import reverse
 # from django.contrib.auth import get_user_model
-from rest_framework.test import APIClient, force_authenticate
+from rest_framework.test import APIClient
 from rest_framework import status
 
 SUBJECT_URL = reverse("subject:subject-list")
@@ -30,7 +30,7 @@ class SubjectUnauthenticatedTests(TestCase):
 
     def test_get_subject_test_success(self) -> None:
 
-        subject = SubjectModel.objects.create(
+        SubjectModel.objects.create(
             code='IDS222',
             name='Desarrollo de Software 1',
             credits=4,

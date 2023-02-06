@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 
 from rest_framework.test import APIClient, APITestCase
 from rest_framework.reverse import reverse
-from core.models import Subject as SubjectModel
 from rest_framework import status
 
 SUBJECTS_URL = reverse('subject:subject-list')
