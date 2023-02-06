@@ -1,8 +1,9 @@
 from django.urls import path
-from subject.views import Subjects
+from subject.views import SubjectsListView, SubjectDetailView
 
 app_name = 'subject'
 
 urlpatterns = [
-    path('', Subjects.as_view(), name='subject-list')
+    path('', SubjectsListView.as_view(), name='subject-list'),
+    path('<str:code>', SubjectDetailView.as_view(), name='subject-detail'),
 ]

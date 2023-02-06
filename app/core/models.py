@@ -67,7 +67,11 @@ class Subject(models.Model):
     is_lab = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return f"{self.code} - {self.name}"
+        return f"{self.id} - {self.code} - {self.name}"
+
+    def save(self, *args, **kwargs):
+        self.code = self.code.upper()
+        super().save(*args, **kwargs)
 
 
 class Weekday(models.Model):

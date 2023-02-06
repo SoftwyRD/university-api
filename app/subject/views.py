@@ -8,8 +8,8 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 
 
-class Subjects(views.APIView):
-    # """View for list subjects in api"""
+class SubjectsListView(views.APIView):
+    """View for list subjects in api"""
     # permission_classes = [IsAdminUser]
     # permission_classes = [IsAuthenticated]
 
@@ -18,7 +18,7 @@ class Subjects(views.APIView):
     def get(self, req, format=None):
         try:
             subjects = SubjectModel.objects.all()
-            serializer = SubjectSerializer(subjects, many=True)
+            serializer = self.serializer(subjects, many=True)
             response = {
                 "status": "success",
                 "data": {
@@ -65,6 +65,43 @@ class Subjects(views.APIView):
                 "message": ex,
             }
 
-            print(ex)
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class SubjectDetailView(views.APIView):
+    """
+    View for GET, PUT and PATCH subject details
+    """
+    serializer = SubjectSerializer
+
+    def get(self, req, code, format=None):
+        try:
+            code = code.upper()
+            if SubjectModel.objects.filter(code=code):
+                subject = SubjectModel.objects.get(code=code)
+                serializer = self.serializer(subject, many=False)
+
+                response = {
+                    "status": "success",
+                    "data": {
+                        "subject": serializer.data,
+                    },
+                }
+
+                return Response(response, status.HTTP_200_OK)
+
+            response = {
+                "status": "error",
+                "data": {
+                    "message": "Subject does not exist",
+                },
+            }
+
+            return Response(response, status.HTTP_404_NOT_FOUND)
+        except Exception as ex:
+            response = {
+                "status": "fail",
+                "message": ex,
+            }
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)

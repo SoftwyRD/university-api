@@ -2,12 +2,24 @@ from django.contrib.auth import get_user_model
 
 from rest_framework.test import APIClient, APITestCase
 from rest_framework.reverse import reverse
-from core.models import User
+from core.models import Subject as SubjectModel
 from rest_framework import status
+
 SUBJECTS_URL = reverse('subject:subject-list')
 
 
+def detail_url(id):
+    return reverse('subject:subject-detail', args=[id])
+
+
 class AuthorizedTests(APITestCase):
+    payload = {
+        'code': 'IDS222',
+        'name': 'Desarrollo de Software 1',
+        'credits': 4,
+        'is_lab': 0,
+    }
+
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_superuser(
@@ -26,12 +38,44 @@ class AuthorizedTests(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_create_subject(self):
+        res = self.client.post(SUBJECTS_URL, self.payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+    def test_create_subject_with_repeated_code(self):
+        res1 = self.client.post(SUBJECTS_URL, self.payload)
+        res2 = self.client.post(SUBJECTS_URL, self.payload)
+
+        self.assertEqual(res1.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res2.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_get_created_subject_by_code(self):
+        subject = self.client.post(SUBJECTS_URL, self.payload)
+
+        res = self.client.get(detail_url(
+            subject.data["data"]["subject"]["code"]))
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data["data"]["subject"]
+                         ["name"], subject.data["data"]["subject"]["name"])
+
+    def test_get_unexisting_subject(self):
+        res = self.client.get(detail_url('aaaaaa'))
+
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_created_subject_by_code_lower_case(self):
         payload = {
-            'code': 'IDS222',
+            'code': 'iDS222',
             'name': 'Desarrollo de Software 1',
             'credits': 4,
             'is_lab': 0,
         }
-        res = self.client.post(SUBJECTS_URL, payload)
+        codeLower = 'IdS222'
+        subject = self.client.post(SUBJECTS_URL, payload)
 
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        res = self.client.get(detail_url(codeLower))
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data["data"]["subject"]
+                         ["name"], subject.data["data"]["subject"]["name"])
