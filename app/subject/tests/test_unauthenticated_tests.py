@@ -9,13 +9,22 @@ from rest_framework import status
 SUBJECT_URL = reverse("subject:subject-list")
 
 
-# Create your tests here.
+def detail_url(id):
+    return reverse('subject:subject-detail', args=[id])
+
+
 class SubjectUnauthenticatedTests(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
 
-    def test_create_subject_test_success(self) -> None:
-        res = self.client.get(SUBJECT_URL)
+    def test_create_subject_test(self) -> None:
+        payload = {
+            'code': 'IDS222',
+            'name': 'Desarrollo de Software 1',
+            'credits': 4,
+            'is_lab': 0,
+        }
+        res = self.client.post(SUBJECT_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -30,6 +39,6 @@ class SubjectUnauthenticatedTests(TestCase):
 
         res = self.client.get(SUBJECT_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         # self.assertNotEqual(
         # subject.code, res.data["data"]["subjects"][0]['code'])
