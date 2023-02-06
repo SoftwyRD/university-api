@@ -113,3 +113,29 @@ class SubjectDetailView(views.APIView):
             }
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def delete(self, req, code, format=None):
+        try:
+            if SubjectModel.objects.filter(code=code):
+                subject = SubjectModel.objects.get(code=code)
+                subject.delete()
+
+                response = {
+                    "status": "success",
+                    "message": "Subject deleted",
+                }
+                return Response(response, status.HTTP_204_NO_CONTENT)
+
+            response = {
+                "status": "error",
+                "message": "Subject does not exist",
+            }
+
+            return Response(response, status.HTTP_404_NOT_FOUND)
+        except Exception as ex:
+            response = {
+                "status": "fail",
+                "message": ex,
+            }
+
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
