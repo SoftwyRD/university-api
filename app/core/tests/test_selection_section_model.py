@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from core.models import Selection, Subject, SelectionSection
+from core.models import Selection, Subject, SubjectSection
 
 PAYLOAD = {
     "section": 3,
@@ -10,7 +10,7 @@ PAYLOAD = {
 
 
 def create_selection_section(**params):
-    selection_section = SelectionSection.objects.create(**params)
+    selection_section = SubjectSection.objects.create(**params)
     return selection_section
 
 
@@ -52,7 +52,7 @@ class SelectionSectionModelTests(TestCase):
     def test_partial_update_selection_section(self):
         new_professor = "Michael"
         selection_section = create_selection_section(**PAYLOAD)
-        SelectionSection.objects.update(professor=new_professor)
+        SubjectSection.objects.update(professor=new_professor)
         selection_section.refresh_from_db()
 
         self.assertEqual(selection_section.selection, PAYLOAD["selection"])
@@ -64,7 +64,7 @@ class SelectionSectionModelTests(TestCase):
     def test_delete_selection_section(self):
         selection_section = create_selection_section(**PAYLOAD)
         selection_section.delete()
-        selection_section = SelectionSection.objects.filter(
+        selection_section = SubjectSection.objects.filter(
             professor=PAYLOAD["professor"]
         )
 
@@ -72,7 +72,7 @@ class SelectionSectionModelTests(TestCase):
 
     def test_get_selection_section(self):
         create_selection_section(**PAYLOAD)
-        selection_section = SelectionSection.objects.get(
+        selection_section = SubjectSection.objects.get(
             professor=PAYLOAD["professor"]
         )
 
@@ -92,6 +92,6 @@ class SelectionSectionModelTests(TestCase):
         )
         create_selection_section(**PAYLOAD)
 
-        selection_sections = SelectionSection.objects.all()
+        selection_sections = SubjectSection.objects.all()
 
         self.assertEqual(selection_sections.count(), 2)
