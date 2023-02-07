@@ -13,13 +13,13 @@ def subject_section_location_url(subject_section_id):
     return reverse("schedule:subject-details", args=[subject_section_id])
 
 
-class SubjectSectionView(APIView):
+class SubjectSectionListView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, id, format=None):
+    def get(self, request, selection_id, format=None):
         try:
             user = request.user
-            selection = Selection.objects.get(id=id)
+            selection = Selection.objects.get(id=selection_id)
 
             if selection.user != user:
                 response = {
@@ -50,10 +50,10 @@ class SubjectSectionView(APIView):
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def post(self, request, id, format=None):
+    def post(self, request, selection_id, format=None):
         try:
             subject_section = request.user
-            selection = Selection.objects.get(id=id)
+            selection = Selection.objects.get(id=selection_id)
 
             if selection.user != subject_section:
                 response = {
@@ -94,6 +94,105 @@ class SubjectSectionView(APIView):
                 },
             }
             return Response(response, status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "message": ex,
+            }
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class SubjectSectionDetailsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, selection_id, subject_section_id, format=None):
+        try:
+            user = request.user
+            selection = Selection.objects.get(id=selection_id)
+
+            if selection.user != user:
+                response = {
+                    "status": "fail",
+                    "data": {
+                        "title": "Could not find ",
+                        "message": "",
+                    },
+                }
+                return Response(response, status=status.HTTP_404_NOT_FOUND)
+
+            subject_section = SubjectSection.objects.get(id=subject_section_id)
+            serializer = SubjectSectionSerializer(subject_section, many=False)
+            response = {
+                "status": "success",
+                "data": {
+                    "subject_section": serializer.data,
+                },
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "message": ex,
+            }
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def patch(self, request, selection_id, subject_section_id, format=None):
+        try:
+            user = request.user
+            selection = Selection.objects.get(id=selection_id)
+            if selection.user != user:
+                response = {
+                    "status": "fail",
+                    "data": {
+                        "title": "Could not find ",
+                        "message": "",
+                    },
+                }
+                return Response(response, status=status.HTTP_404_NOT_FOUND)
+
+            data = request.data
+            subject_section = SubjectSection.objects.get(id=subject_section_id)
+            serializer = SubjectSectionSerializer(
+                subject_section, data=data, many=False
+            )
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+            response = {
+                "status": "fail",
+                "data": {
+                    "title": "Could not update the subject subject",
+                    "message": serializer.errors,
+                },
+            }
+            return Response(response, status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "message": ex,
+            }
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def delete(self, request, selection_id, subject_section_id, format=None):
+        try:
+            user = request.user
+            selection = Selection.objects.get(id=selection_id)
+            if selection.user != user:
+                response = {
+                    "status": "fail",
+                    "data": {
+                        "title": "Could not find ",
+                        "message": "",
+                    },
+                }
+                return Response(response, status=status.HTTP_404_NOT_FOUND)
+
+            subject_section = SubjectSection.objects.get(id=subject_section_id)
+            subject_section.delete()
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as ex:
             response = {
                 "status": "error",
