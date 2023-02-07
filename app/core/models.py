@@ -116,7 +116,7 @@ class Selection(models.Model):
         return self.name
 
 
-class SelectionSection(models.Model):
+class SubjectSection(models.Model):
     id = models.AutoField(primary_key=True, unique=True, editable=False)
     selection = models.ForeignKey(
         Selection, on_delete=models.SET_NULL, null=True
@@ -130,9 +130,9 @@ class SelectionSection(models.Model):
         return f"{self.selection.name}{self.section}"
 
 
-class Schedule(models.Model):
+class SectionSchedule(models.Model):
     id = models.AutoField(primary_key=True, unique=True, editable=False)
-    section = models.ForeignKey(SelectionSection, on_delete=models.CASCADE)
+    section = models.ForeignKey(SubjectSection, on_delete=models.CASCADE)
     weekday = models.ForeignKey(Weekday, on_delete=models.SET_NULL, null=True)
     start_time = models.IntegerField(
         default=7, validators=[MinValueValidator(7), MaxValueValidator(20)]
