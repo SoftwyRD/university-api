@@ -17,15 +17,16 @@ class SelectionListView(APIView):
     def post(self, req, format=None):
         selection = dict(req.data)
 
-        # selection["user"] = req.user
+        selection["user"] = req.user
         selection["name"] = "AAAAAAAAAAAa"
         # print(selection)
-        serializer = self.serializer(data=selection, many=False)
+        serializer = self.serializer(data=selection, user=req.user, many=False)
         # print(serializer.data)
 
         if serializer.is_valid():
-            serializer.save()
             print(serializer.data)
+
+            serializer.save()
 
             selection = serializer.data
 
