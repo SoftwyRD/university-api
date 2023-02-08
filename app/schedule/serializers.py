@@ -23,20 +23,39 @@ class SubjectSerializer(ModelSerializer):
 
 
 class SubjectSectionSerializer(ModelSerializer):
-    selection = SerializerMethodField(read_only=True)
-    subject = SerializerMethodField(read_only=True)
+    subject_code = SerializerMethodField()
+    subject_name = SerializerMethodField()
+    subject = SerializerMethodField()
 
     class Meta:
         model = SubjectSection
-        fields = "__all__"
+        fields = [
+            "id",
+            "selection",
+            "section",
+            "subject_code",
+            "subject_name",
+            "professor",
+            "taken",
+        ]
 
     def get_selection(self, obj):
         selection = obj.selection
         serializer = SelectionSerializer(selection, many=False)
-        return serializer.data["name"]
+        data = serializer.data
+        selection = data["name"]
+        return selection
 
-    def get_subject(self, obj):
+    def get_subject_code(self, obj):
         subject = obj.subject
         serializer = SubjectSerializer(subject, many=False)
-        subject_name = f"{serializer.data['code']} - {serializer.data['name']}"
+        data = serializer.data
+        subject_code = data["code"]
+        return subject_code
+
+    def get_subject_name(self, obj):
+        subject = obj.subject
+        serializer = SubjectSerializer(subject, many=False)
+        data = serializer.data
+        subject_name = data["name"]
         return subject_name
