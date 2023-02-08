@@ -35,6 +35,7 @@ class SubjectSectionListView(APIView):
                 selection=selection
             )
             serializer = SubjectSectionSerializer(subject_section, many=True)
+
             response = {
                 "status": "success",
                 "data": {
@@ -46,7 +47,7 @@ class SubjectSectionListView(APIView):
         except Exception as ex:
             response = {
                 "status": "error",
-                "message": ex,
+                "message": [arg for arg in ex.args],
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
