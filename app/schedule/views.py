@@ -15,23 +15,35 @@ class SelectionListView(APIView):
     serializer = SelectionSerializer
 
     def post(self, req, format=None):
-        selection = req.data
+        selection = dict(req.data)
 
-        # serUser = UserSerializer(user, many=False)
-        serializer = self.serializer(data=selection, user=req.user, many=False)
+        # selection["user"] = req.user
+        selection["name"] = "AAAAAAAAAAAa"
+        # print(selection)
+        serializer = self.serializer(data=selection, many=False)
+        # print(serializer.data)
 
         if serializer.is_valid():
             serializer.save()
+            print(serializer.data)
 
-        selection = serializer.data
+            selection = serializer.data
 
+            response = {
+                "status": "success",
+                "data": {
+                    "selection": selection,
+                },
+            }
+            return Response(response, status.HTTP_201_CREATED)
         response = {
-            "status": "success",
+            "status": "failed",
             "data": {
-                "selection": selection,
+                "selection": serializer.errors,
             },
         }
-        return Response(response, status.HTTP_201_CREATED)
+        print(serializer.errors)
+        return Response(response, status.HTTP_400_BAD_REQUEST)
 
     def get(self, req, format=None):
         selection = SelectionModel.objects.all()

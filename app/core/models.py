@@ -113,8 +113,7 @@ class Selection(models.Model):
     modified_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
-        ret = f"{self.name} + {self.id} + {self.user}"
-        return ret
+        return self.name
 
 
 class SubjectSection(models.Model):
