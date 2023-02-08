@@ -127,7 +127,7 @@ class SubjectSection(models.Model):
     taken = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return f"{self.selection.name}{self.section}"
+        return f"{self.subject.code}-{self.section}"
 
 
 class SectionSchedule(models.Model):

@@ -68,3 +68,6 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Subject)
 admin.site.register(models.Weekday)
+admin.site.register(models.SubjectSection)
+admin.site.register(models.SectionSchedule)
+admin.site.register(models.Selection)
