@@ -48,6 +48,33 @@ class SelectionTests(APITestCase):
 
         res = self.client.post(SELECTION_URL, payload)
 
-        print(res.data["data"]["selection"])
+        # print(res.data["data"]["selection"])
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res.data["data"]["selection"]
+                         ["name"], payload["name"])
+        self.assertEqual(res.data["data"]["selection"]
+                         ["user"], self.user.id)
+
+    def test_post_selection_different_users(self):
+        payload = {
+            "name": "new name",
+        }
+        newUser = create_user(email="newmail@example.com",
+                              username='newsuusername')
+        selectionNew = SelectionModel.objects.create(
+            user=newUser, name="other user selection")
+
+        resSelection = self.client.post(SELECTION_URL, payload)
+
+        res = self.client.get(SELECTION_URL)
+
+        print(res.data["data"]["selection"])
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(resSelection.data["data"]["selection"]
+                         ["user"], res.data["data"]["selection"][0]
+                         ["user"])
+        self.assertEqual(resSelection.data["data"]["selection"]
+                         ["name"], res.data["data"]["selection"][0]
+                         ["name"])

@@ -32,46 +32,59 @@ class SelectionListView(APIView):
     serializer = SelectionSerializer
 
     def post(self, req, format=None):
+        try:
+            selection = {
+                "user": req.user.id,
+                "name": req.data["name"],
+            }
+            serializer = self.serializer(data=selection, many=False)
 
-        selection = {
-            "user": req.user.id,
-            "name": req.data["name"],
-        }
+            if serializer.is_valid():
+                serializer.save()
 
-        serializer = self.serializer(data=selection, many=False)
+                selection = serializer.data
 
-        if serializer.is_valid():
-            serializer.save()
+                response = {
+                    "status": "success",
+                    "data": {
+                        "selection": selection,
+                    },
+                }
+                return Response(response, status.HTTP_201_CREATED)
 
-            selection = serializer.data
+            response = {
+                "status": "failed",
+                "data": {
+                    "selection": serializer.errors,
+                },
+            }
+            print(serializer.errors)
+            return Response(response, status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "message": ex,
+            }
+
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def get(self, req, format=None):
+        try:
+            selection = SelectionModel.objects.all().filter(user=req.user.id)
+
+            serializer = self.serializer(selection, many=True)
 
             response = {
                 "status": "success",
                 "data": {
-                    "selection": selection,
+                    "selection": serializer.data,
                 },
             }
-            return Response(response, status.HTTP_201_CREATED)
 
-        response = {
-            "status": "failed",
-            "data": {
-                "selection": serializer.errors,
-            },
-        }
-        print(serializer.errors)
-        return Response(response, status.HTTP_400_BAD_REQUEST)
-
-    def get(self, req, format=None):
-        selection = SelectionModel.objects.all()
-
-        serializer = self.serializer(selection, many=True)
-
-        response = {
-            "status": "success",
-            "data": {
-                "selection": serializer.data,
-            },
-        }
-
-        return Response(response, status.HTTP_200_OK)
+            return Response(response, status.HTTP_200_OK)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "message": ex,
+            }
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
