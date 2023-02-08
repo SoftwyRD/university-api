@@ -5,6 +5,7 @@ from rest_framework.test import APIClient, APITestCase
 from rest_framework.reverse import reverse
 
 from core.models import Selection as SelectionModel
+from schedule.serializers import SelectionSerializer
 
 SELECTION_URL = reverse("schedule:selection-list")
 
@@ -42,14 +43,11 @@ class SelectionTests(APITestCase):
 
     def test_post_selection(self):
         payload = {
-            "name": "name",
+            "name": "new name",
         }
 
         res = self.client.post(SELECTION_URL, payload)
 
-        selections = SelectionModel.objects.all()
-        # res2 = self.client.get(SELECTION_URL)
-        # print(res.data["data"]["selection"])
-        # print(selections)
+        print(res.data["data"]["selection"])
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
