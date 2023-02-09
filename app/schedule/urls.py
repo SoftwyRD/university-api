@@ -5,5 +5,7 @@ app_name = "schedule"
 
 
 urlpatterns = [
-    path('', views.SelectionListView.as_view(), name='selection-list')
+    path('', views.SelectionListView.as_view(), name='selection-list'),
+    path('<str:id>', views.SelectionDetailView.as_view(),
+         name='selection-detail')
 ]

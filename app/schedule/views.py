@@ -77,7 +77,8 @@ class SelectionListView(APIView):
             response = {
                 "status": "success",
                 "data": {
-                    "selection": serializer.data,
+                    "count": selection.count(),
+                    "selections": serializer.data,
                 },
             }
 
@@ -88,3 +89,22 @@ class SelectionListView(APIView):
                 "message": ex,
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class SelectionDetailView(APIView):
+    authentication_classes = [IsAuthenticated]
+    serializer = SelectionSerializer
+
+    def get(self, req, id, format=None):
+        selection = SelectionModel.objects.get(id=id)
+
+        serialized = self.serializer(selection, many=False)
+
+        response = {
+            "status": "success",
+            "data": {
+                "selection": serialized.data
+            }
+        }
+
+        return Response(response, status.HTTP_200_OK)

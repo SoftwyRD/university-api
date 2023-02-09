@@ -26,7 +26,27 @@ def create_user(first_name="first_name",
     return user
 
 
-class SelectionTests(APITestCase):
+class SelectionTestsUnaythorized(APITestCase):
+    payload = {
+        "name": "name",
+    }
+
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_post_selection(self):
+        res = self.client.post(SELECTION_URL, self.payload)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_selection(self):
+        res = self.client.get(SELECTION_URL)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class SelectionTestsAuthorized(APITestCase):
+    payload = {
+        "name": "name",
+    }
 
     def setUp(self):
         self.client = APIClient()
@@ -35,9 +55,7 @@ class SelectionTests(APITestCase):
         self.client.force_authenticate(self.user)
 
     def test_get_empty_selection(self):
-        # SelectionModel.objects.create(name="Name", user=self.user)
         res = self.client.get(SELECTION_URL)
-        # print(res.data["data"]["selection"])
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -62,14 +80,12 @@ class SelectionTests(APITestCase):
         }
         newUser = create_user(email="newmail@example.com",
                               username='newsuusername')
-        selectionNew = SelectionModel.objects.create(
+        SelectionModel.objects.create(
             user=newUser, name="other user selection")
 
         resSelection = self.client.post(SELECTION_URL, payload)
 
         res = self.client.get(SELECTION_URL)
-
-        print(res.data["data"]["selection"])
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(resSelection.data["data"]["selection"]
@@ -78,3 +94,11 @@ class SelectionTests(APITestCase):
         self.assertEqual(resSelection.data["data"]["selection"]
                          ["name"], res.data["data"]["selection"][0]
                          ["name"])
+
+    def test_post_selection_same_names(self):
+        self.client.post(SELECTION_URL, self.payload)
+        self.client.post(SELECTION_URL, self.payload)
+
+        res = self.client.get(SELECTION_URL)
+
+        self.assertEqual(len(res.data), 2)
