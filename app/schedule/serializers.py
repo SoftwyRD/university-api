@@ -25,7 +25,7 @@ class SubjectSerializer(ModelSerializer):
 class SubjectSectionSerializer(ModelSerializer):
     subject_code = SerializerMethodField()
     subject_name = SerializerMethodField()
-    subject = SerializerMethodField()
+    selection = SerializerMethodField()
 
     class Meta:
         model = SubjectSection
@@ -38,6 +38,18 @@ class SubjectSectionSerializer(ModelSerializer):
             "professor",
             "taken",
         ]
+
+    def run_validation(self, data):
+        super().run_validation(data)
+        return data
+
+    def create(self, validated_data):
+        subject_id = validated_data["subject"]
+        subject = Subject.objects.get(id=subject_id)
+
+        validated_data["subject"] = subject
+        subject_section = SubjectSection.objects.create(**validated_data)
+        return subject_section
 
     def get_selection(self, obj):
         selection = obj.selection

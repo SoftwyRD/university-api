@@ -9,8 +9,10 @@ from core.models import SubjectSection, Selection
 # Create your views here.
 
 
-def subject_section_location_url(subject_section_id):
-    return reverse("schedule:subject-details", args=[subject_section_id])
+def subject_section_location_url(selection_id, subject_section_id):
+    return reverse(
+        "schedule:subject-details", args=[selection_id, subject_section_id]
+    )
 
 
 class SubjectSectionListView(APIView):
@@ -25,8 +27,9 @@ class SubjectSectionListView(APIView):
                 response = {
                     "status": "fail",
                     "data": {
-                        "title": "Could not find ",
-                        "message": "",
+                        "title": "Could not find selection",
+                        "message": "Could not find any matching"
+                        + " selections to add this subject section.",
                     },
                 }
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
@@ -44,29 +47,31 @@ class SubjectSectionListView(APIView):
                 },
             }
             return Response(response, status=status.HTTP_200_OK)
-        except Exception as ex:
+        except
             response = {
                 "status": "error",
-                "message": [arg for arg in ex.args],
+                "message": "There was an error trying to get the subjects.",
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request, selection_id, format=None):
         try:
-            subject_section = request.user
+            user = request.user
             selection = Selection.objects.get(id=selection_id)
 
-            if selection.user != subject_section:
+            if selection.user != user:
                 response = {
                     "status": "fail",
                     "data": {
-                        "title": "Could not find ",
-                        "message": "",
+                        "title": "Could not find the selection",
+                        "message": "Could not find the selection you are trying to add the subject.",
                     },
                 }
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
 
             data = request.data
+            data["selection"] = selection
+
             serializer = SubjectSectionSerializer(data=data, many=False)
             if serializer.is_valid():
                 serializer.save()
@@ -74,7 +79,7 @@ class SubjectSectionListView(APIView):
 
                 headers = {
                     "Location": subject_section_location_url(
-                        subject_section["id"]
+                        selection_id, subject_section["id"]
                     ),
                 }
                 response = {
@@ -95,10 +100,10 @@ class SubjectSectionListView(APIView):
                 },
             }
             return Response(response, status.HTTP_400_BAD_REQUEST)
-        except Exception as ex:
+        except:
             response = {
                 "status": "error",
-                "message": ex,
+                "message": "There was an error trying to get the subjects.",
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -130,10 +135,10 @@ class SubjectSectionDetailsView(APIView):
                 },
             }
             return Response(response, status=status.HTTP_200_OK)
-        except Exception as ex:
+        except:
             response = {
                 "status": "error",
-                "message": ex,
+                "message": "There was an error trying to get the subjects.",
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -169,10 +174,10 @@ class SubjectSectionDetailsView(APIView):
                 },
             }
             return Response(response, status.HTTP_400_BAD_REQUEST)
-        except Exception as ex:
+        except:
             response = {
                 "status": "error",
-                "message": ex,
+                "message": "There was an error trying to get the subjects.",
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -194,9 +199,9 @@ class SubjectSectionDetailsView(APIView):
             subject_section.delete()
 
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except Exception as ex:
+        except:
             response = {
                 "status": "error",
-                "message": ex,
+                "message": "There was an error trying to get the subjects.",
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
