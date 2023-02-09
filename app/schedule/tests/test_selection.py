@@ -42,8 +42,20 @@ class SelectionTestsUnaythorized(APITestCase):
         res = self.client.post(SELECTION_URL, self.payload)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_get_selection(self):
+    def test_get_selections(self):
         res = self.client.get(SELECTION_URL)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_get_selection(self):
+        res = self.client.get(selection_detail_url(0))
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_delete_selection(self):
+        res = self.client.delete(selection_detail_url(0))
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_patch_selection(self):
+        res = self.client.patch(selection_detail_url(0))
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
@@ -129,5 +141,59 @@ class SelectionTestsAuthorized(APITestCase):
         id = otherSelection.id
 
         res = self.client.get(selection_detail_url(id))
-        print(res.data)
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_one_selection(self):
+        selection = self.client.post(SELECTION_URL, self.payload)
+
+        id = selection.data["data"]["selection"]["id"]
+
+        res = self.client.delete(selection_detail_url(id))
+
+        selectionsNumber = SelectionModel.objects.all().count()
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(selectionsNumber, 0)
+
+    def test_delete_deleted_selection(self):
+        selection = self.client.post(SELECTION_URL, self.payload)
+
+        id = selection.data["data"]["selection"]["id"]
+
+        self.client.delete(selection_detail_url(id))
+        res = self.client.delete(selection_detail_url(id))
+
+        selectionsNumber = SelectionModel.objects.all().count()
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(selectionsNumber, 0)
+
+    def test_delete_other_user_selection(self):
+        newUser = create_user(email="newmail@example.com",
+                              username='newsuusername')
+        otherSelection = SelectionModel.objects.create(
+            user=newUser, name="other user selection")
+
+        id = otherSelection.id
+
+        res = self.client.delete(selection_detail_url(id))
+
+        selectionsNumber = SelectionModel.objects.all().count()
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(selectionsNumber, 1)
+
+    def test_patch_selection(self):
+        selection = SelectionModel.objects.create(
+            user=self.user, name="my selection")
+        id = selection.id
+
+        payload = {
+            "name": "my super new name",
+            # "user": self.user.id,
+        }
+        res = self.client.patch(selection_detail_url(id), payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data["data"]["selection"]
+                         ["name"], payload["name"])
