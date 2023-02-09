@@ -10,6 +10,10 @@ from schedule.serializers import SelectionSerializer
 SELECTION_URL = reverse("schedule:selection-list")
 
 
+def selection_detail_url(id):
+    return reverse("schedule:selection-list", args=[id])
+
+
 def create_user(first_name="first_name",
                 last_name="last_name",
                 email="user@example.com",
@@ -102,3 +106,12 @@ class SelectionTestsAuthorized(APITestCase):
         res = self.client.get(SELECTION_URL)
 
         self.assertEqual(len(res.data), 2)
+
+    def test_get_one_selection(self):
+        selection = self.client.post(SELECTION_URL, self.payload)
+
+        id = selection.data["data"]["selection"]["user"]
+
+        res = self.client.get(selection_detail_url(id))
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
