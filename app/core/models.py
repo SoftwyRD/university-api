@@ -110,7 +110,7 @@ class Selection(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE
     )
     created_on = models.DateTimeField(auto_now_add=True)
-    modified_on = models.DateTimeField(auto_now_add=True)
+    modified_on = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
         return self.name
