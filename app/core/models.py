@@ -84,7 +84,7 @@ class Subject(models.Model):
     is_lab = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return f"{self.id} - {self.code} - {self.name}"
+        return f"{self.code} - {self.name}"
 
     def save(self, *args, **kwargs):
         self.code = self.code.upper()
@@ -116,9 +116,7 @@ class Selection(models.Model):
 
 class SubjectSection(models.Model):
     id = models.AutoField(primary_key=True, unique=True, editable=False)
-    selection = models.ForeignKey(
-        Selection, on_delete=models.SET_NULL, null=True
-    )
+    selection = models.ForeignKey(Selection, on_delete=models.CASCADE)
     section = models.IntegerField(default=1, validators=[MinValueValidator(0)])
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True)
     professor = models.CharField(max_length=60)

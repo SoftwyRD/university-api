@@ -47,7 +47,7 @@ class SubjectSectionListView(APIView):
                 },
             }
             return Response(response, status=status.HTTP_200_OK)
-        except
+        except:
             response = {
                 "status": "error",
                 "message": "There was an error trying to get the subjects.",
