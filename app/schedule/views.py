@@ -120,8 +120,8 @@ class SubjectSectionDetailsView(APIView):
                 response = {
                     "status": "fail",
                     "data": {
-                        "title": "Could not find ",
-                        "message": "",
+                        "title": "Could not find the selection",
+                        "message": "Could not find the selection you are trying to get the subject.",
                     },
                 }
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
@@ -150,8 +150,8 @@ class SubjectSectionDetailsView(APIView):
                 response = {
                     "status": "fail",
                     "data": {
-                        "title": "Could not find ",
-                        "message": "",
+                        "title": "Could not find the selection",
+                        "message": "Could not find the selection you are trying to update the subject.",
                     },
                 }
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
@@ -170,14 +170,14 @@ class SubjectSectionDetailsView(APIView):
                 "status": "fail",
                 "data": {
                     "title": "Could not update the subject subject",
-                    "message": serializer.errors,
+                    "details": serializer.errors,
                 },
             }
             return Response(response, status.HTTP_400_BAD_REQUEST)
         except:
             response = {
                 "status": "error",
-                "message": "There was an error trying to get the subjects.",
+                "message": "There was an error trying to update the subjects.",
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -190,7 +190,7 @@ class SubjectSectionDetailsView(APIView):
                     "status": "fail",
                     "data": {
                         "title": "Could not find ",
-                        "message": "",
+                        "details": "",
                     },
                 }
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
