@@ -3,8 +3,10 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from schedule.serializers import SubjectSectionSerializer
-from core.models import SubjectSection, Selection
+from schedule.serializers import SubjectSectionSerializer, SelectionSerializer
+from core.models import SubjectSection, Selection as SelectionModel
+
+from datetime import datetime
 
 # Create your views here.
 
@@ -21,7 +23,7 @@ class SubjectSectionListView(APIView):
     def get(self, request, selection_id, format=None):
         try:
             user = request.user
-            selection = Selection.objects.get(id=selection_id)
+            selection = SelectionModel.objects.get(id=selection_id)
 
             if selection.user != user:
                 response = {
@@ -57,14 +59,15 @@ class SubjectSectionListView(APIView):
     def post(self, request, selection_id, format=None):
         try:
             user = request.user
-            selection = Selection.objects.get(id=selection_id)
+            selection = SelectionModel.objects.get(id=selection_id)
 
             if selection.user != user:
                 response = {
                     "status": "fail",
                     "data": {
                         "title": "Could not find the selection",
-                        "message": "Could not find the selection you are trying to add the subject.",
+                        "message": "Could not find the selection you are" +
+                        " trying to add the subject.",
                     },
                 }
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
@@ -114,14 +117,15 @@ class SubjectSectionDetailsView(APIView):
     def get(self, request, selection_id, subject_section_id, format=None):
         try:
             user = request.user
-            selection = Selection.objects.get(id=selection_id)
+            selection = SelectionModel.objects.get(id=selection_id)
 
             if selection.user != user:
                 response = {
                     "status": "fail",
                     "data": {
                         "title": "Could not find the selection",
-                        "message": "Could not find the selection you are trying to get the subject.",
+                        "message": "Could not find the selection you" +
+                        " are trying to get the subject.",
                     },
                 }
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
@@ -145,13 +149,14 @@ class SubjectSectionDetailsView(APIView):
     def patch(self, request, selection_id, subject_section_id, format=None):
         try:
             user = request.user
-            selection = Selection.objects.get(id=selection_id)
+            selection = SelectionModel.objects.get(id=selection_id)
             if selection.user != user:
                 response = {
                     "status": "fail",
                     "data": {
                         "title": "Could not find the selection",
-                        "message": "Could not find the selection you are trying to update the subject.",
+                        "message": "Could not find the selection you are" +
+                        " trying to update the subject.",
                     },
                 }
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
@@ -184,7 +189,7 @@ class SubjectSectionDetailsView(APIView):
     def delete(self, request, selection_id, subject_section_id, format=None):
         try:
             user = request.user
-            selection = Selection.objects.get(id=selection_id)
+            selection = SelectionModel.objects.get(id=selection_id)
             if selection.user != user:
                 response = {
                     "status": "fail",
@@ -204,4 +209,191 @@ class SubjectSectionDetailsView(APIView):
                 "status": "error",
                 "message": "There was an error trying to get the subjects.",
             }
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class SelectionListView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer = SelectionSerializer
+
+    def post(self, req, format=None):
+        try:
+            selection = {
+                "user": req.user.id,
+                "name": req.data["name"],
+            }
+            serializer = self.serializer(data=selection, many=False)
+
+            if serializer.is_valid():
+                serializer.save()
+
+                selection = serializer.data
+
+                response = {
+                    "status": "success",
+                    "data": {
+                        "selection": selection,
+                    },
+                }
+                return Response(response, status.HTTP_201_CREATED)
+
+            response = {
+                "status": "failed",
+                "data": {
+                    "selection": serializer.errors,
+                },
+            }
+            print(serializer.errors)
+            return Response(response, status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "message": ex,
+            }
+
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def get(self, req, format=None):
+        try:
+            selection = SelectionModel.objects.all().filter(user=req.user.id)
+
+            serializer = self.serializer(selection, many=True)
+
+            response = {
+                "status": "success",
+                "data": {
+                    "count": selection.count(),
+                    "selections": serializer.data,
+                },
+            }
+
+            return Response(response, status.HTTP_200_OK)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "message": ex,
+            }
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class SelectionDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer = SelectionSerializer
+
+    def get(self, req, id, format=None):
+        try:
+            selection = SelectionModel.objects.filter(id=id)[0]
+            serialized = self.serializer(selection, many=False)
+
+            if selection and serialized.data["user"] == req.user.id:
+
+                response = {
+                    "status": "success",
+                    "data": {
+                        "selection": serialized.data,
+                    },
+                }
+
+                return Response(response, status.HTTP_200_OK)
+
+            response = {
+                "status": "success",
+                "data": {
+                    "selection": "selection does not exist",
+                },
+            }
+
+            return Response(response, status.HTTP_404_NOT_FOUND)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "data": {
+                    "message": ex,
+                },
+            }
+
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def patch(self, req, id, format=None):
+        try:
+            selectionQuery = SelectionModel.objects.filter(id=id)
+            if selectionQuery:
+                serializedQuerry = self.serializer(
+                    selectionQuery[0], many=False)
+
+            if selectionQuery and serializedQuerry.data["user"] == req.user.id:
+                selection = SelectionModel.objects.get(id=id)
+                data = dict(req.data)
+
+                data["modified_on"] = datetime.now()
+                serializer = self.serializer(
+                    selection, data=req.data, many=False, partial=True)
+
+                if serializer.is_valid():
+                    serializer.save()
+
+                    response = {
+                        "status": "success",
+                        "data": {
+                            "selection": serializer.data,
+                        },
+                    }
+                    return Response(response, status.HTTP_200_OK)
+
+                response = {
+                    "status": "fail",
+                    "data": {
+                        "title": "Could not update the user",
+                        "message": serializer.errors,
+                    },
+                }
+                return Response(response, status.HTTP_400_BAD_REQUEST)
+
+            response = {
+                "status": "fail",
+                "message": "selection does not exist",
+            }
+
+            return Response(response, status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "data": {
+                    "message": ex,
+                },
+            }
+
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def delete(self, req, id, format=None):
+        try:
+            selection = SelectionModel.objects.filter(id=id)
+            if selection:
+                serialized = self.serializer(selection[0], many=False)
+
+            if selection and serialized.data["user"] == req.user.id:
+                selection = SelectionModel.objects.get(id=id)
+                selection.delete()
+
+                response = {
+                    "status": "success",
+                    "data": "SelectionModel deleted",
+                }
+
+                return Response(response, status.HTTP_204_NO_CONTENT)
+
+            response = {
+                "status": "fail",
+                "message": "selection does not exist",
+            }
+
+            return Response(response, status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "data": {
+                    "message": ex,
+                },
+            }
+
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)

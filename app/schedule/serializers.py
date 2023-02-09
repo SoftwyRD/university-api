@@ -1,14 +1,18 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from core.models import SubjectSection, Selection, Subject
 from user.serializers import UserSerializer
+from core.models import SubjectSection, Subject, Selection as SelectionModel
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
 
 class SelectionSerializer(ModelSerializer):
+    """
+    Selection Serializer
+    """
     user = SerializerMethodField(read_only=True)
 
     class Meta:
-        model = Selection
-        fields = ["id", "name", "user"]
+        model = SelectionModel
+        fields = "__all__"
+        read_only_fields = ["id"]
 
     def get_user(self, obj):
         user = obj.user
