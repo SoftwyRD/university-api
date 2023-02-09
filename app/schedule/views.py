@@ -159,7 +159,7 @@ class SubjectSectionDetailsView(APIView):
             data = request.data
             subject_section = SubjectSection.objects.get(id=subject_section_id)
             serializer = SubjectSectionSerializer(
-                subject_section, data=data, many=False
+                subject_section, data=data, many=False, partial=True
             )
 
             if serializer.is_valid():
