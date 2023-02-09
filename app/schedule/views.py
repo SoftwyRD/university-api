@@ -96,15 +96,36 @@ class SelectionDetailView(APIView):
     serializer = SelectionSerializer
 
     def get(self, req, id, format=None):
-        selection = SelectionModel.objects.get(id=id)
+        try:
+            # selection = SelectionModel.objects.get(id=id)
+            selection = SelectionModel.objects.filter(id=id)[0]
+            serialized = self.serializer(selection, many=False)
 
-        serialized = self.serializer(selection, many=False)
+            if selection and serialized.data["user"] == req.user.id:
 
-        response = {
-            "status": "success",
-            "data": {
-                "selection": serialized.data
+                response = {
+                    "status": "success",
+                    "data": {
+                        "selection": serialized.data,
+                    },
+                }
+
+                return Response(response, status.HTTP_200_OK)
+
+            response = {
+                "status": "fail",
+                "data": {
+                    "selection": "selection does not exist",
+                },
             }
-        }
 
-        return Response(response, status.HTTP_200_OK)
+            return Response(response, status.HTTP_404_NOT_FOUND)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "data": {
+                    "message": ex,
+                },
+            }
+
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)

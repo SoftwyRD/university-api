@@ -11,7 +11,7 @@ SELECTION_URL = reverse("schedule:selection-list")
 
 
 def selection_detail_url(id):
-    return reverse("schedule:selection-list", args=[id])
+    return reverse("schedule:selection-detail", args=[id])
 
 
 def create_user(first_name="first_name",
@@ -49,7 +49,7 @@ class SelectionTestsUnaythorized(APITestCase):
 
 class SelectionTestsAuthorized(APITestCase):
     payload = {
-        "name": "name",
+        "name": "selection name",
     }
 
     def setUp(self):
@@ -93,10 +93,10 @@ class SelectionTestsAuthorized(APITestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(resSelection.data["data"]["selection"]
-                         ["user"], res.data["data"]["selection"][0]
+                         ["user"], res.data["data"]["selections"][0]
                          ["user"])
         self.assertEqual(resSelection.data["data"]["selection"]
-                         ["name"], res.data["data"]["selection"][0]
+                         ["name"], res.data["data"]["selections"][0]
                          ["name"])
 
     def test_post_selection_same_names(self):
@@ -110,8 +110,24 @@ class SelectionTestsAuthorized(APITestCase):
     def test_get_one_selection(self):
         selection = self.client.post(SELECTION_URL, self.payload)
 
-        id = selection.data["data"]["selection"]["user"]
+        id = selection.data["data"]["selection"]["id"]
 
         res = self.client.get(selection_detail_url(id))
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data["data"]["selection"]["id"],
+                         selection.data["data"]["selection"]["id"])
+
+    def test_cant_get_selection_of_other_user(self):
+        self.client.post(SELECTION_URL, self.payload)
+
+        newUser = create_user(email="newmail@example.com",
+                              username='newsuusername')
+        otherSelection = SelectionModel.objects.create(
+            user=newUser, name="other user selection")
+
+        id = otherSelection.id
+
+        res = self.client.get(selection_detail_url(id))
+        print(res.data)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
