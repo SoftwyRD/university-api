@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -7,7 +6,8 @@ from django.contrib.auth import get_user_model
 
 from core.models import Selection as SelectionModel
 from schedule.serializers import SelectionSerializer
-from user.serializers import UserSerializer
+from datetime import datetime
+
 # Create your views here.
 
 
@@ -97,7 +97,6 @@ class SelectionDetailView(APIView):
 
     def get(self, req, id, format=None):
         try:
-            # selection = SelectionModel.objects.get(id=id)
             selection = SelectionModel.objects.filter(id=id)[0]
             serialized = self.serializer(selection, many=False)
 
@@ -132,7 +131,6 @@ class SelectionDetailView(APIView):
 
     def patch(self, req, id, format=None):
         try:
-            # selection = SelectionModel.objects.get(id=id)
             selectionQuery = SelectionModel.objects.filter(id=id)
             if selectionQuery:
                 serializedQuerry = self.serializer(
@@ -140,13 +138,9 @@ class SelectionDetailView(APIView):
 
             if selectionQuery and serializedQuerry.data["user"] == req.user.id:
                 selection = SelectionModel.objects.get(id=id)
-                # payload = {}
-                # selection = dict(req.data)
+                data = dict(req.data)
 
-                # for a in selection:
-                #     payload[a] = selection[a][0]
-
-                # print(payload)
+                data["modified_on"] = datetime.now()
                 serializer = self.serializer(
                     selection, data=req.data, many=False, partial=True)
 
@@ -188,7 +182,6 @@ class SelectionDetailView(APIView):
 
     def delete(self, req, id, format=None):
         try:
-            # selection = SelectionModel.objects.get(id=id)
             selection = SelectionModel.objects.filter(id=id)
             if selection:
                 serialized = self.serializer(selection[0], many=False)

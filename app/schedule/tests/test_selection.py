@@ -5,8 +5,7 @@ from rest_framework.test import APIClient, APITestCase
 from rest_framework.reverse import reverse
 
 from core.models import Selection as SelectionModel
-from schedule.serializers import SelectionSerializer
-
+from datetime import datetime
 SELECTION_URL = reverse("schedule:selection-list")
 
 
@@ -190,10 +189,71 @@ class SelectionTestsAuthorized(APITestCase):
 
         payload = {
             "name": "my super new name",
-            # "user": self.user.id,
         }
         res = self.client.patch(selection_detail_url(id), payload)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data["data"]["selection"]
                          ["name"], payload["name"])
+
+    def test_patch_selection_change_id_unsuccess(self):
+        selection = SelectionModel.objects.create(
+            user=self.user, name="my selection")
+        id = selection.id
+
+        payload = {
+            "id": 2,
+        }
+        res = self.client.patch(selection_detail_url(id), payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(str(id), res.data["data"]["selection"]
+                         ["id"])
+
+    def test_patch_selection_of_other_user(self):
+        SelectionModel.objects.create(
+            user=self.user, name="my selection")
+
+        newUser = create_user(email="newmail@example.com",
+                              username='newsuusername')
+        otherSelection = SelectionModel.objects.create(
+            user=newUser, name="other user selection")
+
+        idOther = otherSelection.id
+
+        payload = {
+            "name": "other user name",
+        }
+        res = self.client.patch(selection_detail_url(idOther), payload)
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_patch_selection_data_modified_succesfully(self):
+        selection = SelectionModel.objects.create(
+            user=self.user,
+            name="my selection")
+
+        id = selection.id
+
+        self.assertEqual(selection.created_on, selection.modified_on)
+        payload = {
+            "name": "my super new name",
+        }
+
+        res = self.client.patch(selection_detail_url(id), payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        createdTimeInRes = res.data["data"]["selection"]["created_on"]
+
+        date_object = datetime.strptime(
+            createdTimeInRes, '%Y-%m-%dT%H:%M:%S.%fZ')
+
+        self.assertEqual(date_object.strftime(
+            '%Y-%m-%dT%H:%M:%S.%fZ'),
+            selection.created_on.strftime('%Y-%m-%dT%H:%M:%S.%fZ'))
+
+        self.assertNotEqual(res.data["data"]["selection"]
+                            ["modified_on"], selection.modified_on)
+        self.assertNotEqual(res.data["data"]["selection"]
+                            ["created_on"], res.data["data"]["selection"]
+                            ["modified_on"])
