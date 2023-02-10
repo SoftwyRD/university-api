@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from core.models import Schedule, Weekday, SelectionSection, Selection, Subject
+from core.models import SectionSchedule, Weekday, SubjectSection, Selection, Subject
 
 PAYLOAD = {
     "start_time": 11,
@@ -9,7 +9,7 @@ PAYLOAD = {
 
 
 def create_schedule(**params):
-    schedule = Schedule.objects.create(**params)
+    schedule = SectionSchedule.objects.create(**params)
     return schedule
 
 
@@ -32,7 +32,7 @@ class ScheduleModelTests(TestCase):
             name="My Selection",
             user=self.user,
         )
-        self.section = SelectionSection.objects.create(
+        self.section = SubjectSection.objects.create(
             selection=self.selection,
             section=2,
             subject=self.subject,
@@ -59,7 +59,7 @@ class ScheduleModelTests(TestCase):
     def test_partial_update_schedule(self):
         new_weekday = Weekday.objects.create(name="Tuesday")
         schedule = create_schedule(**PAYLOAD)
-        Schedule.objects.update(weekday=new_weekday)
+        SectionSchedule.objects.update(weekday=new_weekday)
         schedule.refresh_from_db()
 
         self.assertEqual(schedule.section, PAYLOAD["section"])
@@ -70,13 +70,13 @@ class ScheduleModelTests(TestCase):
     def test_delete_schedule(self):
         schedule = create_schedule(**PAYLOAD)
         schedule.delete()
-        schedule = Schedule.objects.filter(weekday=PAYLOAD["weekday"])
+        schedule = SectionSchedule.objects.filter(weekday=PAYLOAD["weekday"])
 
         self.assertFalse(schedule)
 
     def test_get_schedule(self):
         create_schedule(**PAYLOAD)
-        schedule = Schedule.objects.get(weekday=PAYLOAD["weekday"])
+        schedule = SectionSchedule.objects.get(weekday=PAYLOAD["weekday"])
 
         self.assertTrue(schedule)
 
@@ -87,6 +87,6 @@ class ScheduleModelTests(TestCase):
         PAYLOAD.update({"weekday": weekday})
         create_schedule(**PAYLOAD)
 
-        schedules = Schedule.objects.all()
+        schedules = SectionSchedule.objects.all()
 
         self.assertEqual(schedules.count(), 2)

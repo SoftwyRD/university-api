@@ -127,15 +127,23 @@ class SubjectDetailView(views.APIView):
                 if serializer.is_valid():
                     serializer.save()
 
+                    response = {
+                        "status": "success",
+                        "data": {
+                            "subject": serializer.data,
+                        },
+                    }
+
+                    return Response(response, status.HTTP_200_OK)
+
                 response = {
-                    "status": "success",
+                    "status": "fail",
                     "data": {
-                        "subject": serializer.data,
+                        "title": "Could not update the subject",
+                        "message": serializer.errors,
                     },
                 }
-
-                return Response(response, status.HTTP_200_OK)
-
+                return Response(response, status.HTTP_400_BAD_REQUEST)
             response = {
                 "status": "error",
                 "data": {
