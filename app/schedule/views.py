@@ -49,7 +49,7 @@ class SubjectSectionListView(APIView):
                 },
             }
             return Response(response, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             response = {
                 "status": "error",
                 "message": "There was an error trying to get the subjects.",
@@ -66,8 +66,8 @@ class SubjectSectionListView(APIView):
                     "status": "fail",
                     "data": {
                         "title": "Could not find the selection",
-                        "message": "Could not find the selection you are" +
-                        " trying to add the subject.",
+                        "message": "Could not find the selection you are"
+                        + " trying to add the subject.",
                     },
                 }
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
@@ -103,7 +103,7 @@ class SubjectSectionListView(APIView):
                 },
             }
             return Response(response, status.HTTP_400_BAD_REQUEST)
-        except:
+        except Exception:
             response = {
                 "status": "error",
                 "message": "There was an error trying to get the subjects.",
@@ -124,8 +124,8 @@ class SubjectSectionDetailsView(APIView):
                     "status": "fail",
                     "data": {
                         "title": "Could not find the selection",
-                        "message": "Could not find the selection you" +
-                        " are trying to get the subject.",
+                        "message": "Could not find the selection you"
+                        + " are trying to get the subject.",
                     },
                 }
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
@@ -139,7 +139,7 @@ class SubjectSectionDetailsView(APIView):
                 },
             }
             return Response(response, status=status.HTTP_200_OK)
-        except:
+        except Exception:
             response = {
                 "status": "error",
                 "message": "There was an error trying to get the subjects.",
@@ -155,8 +155,8 @@ class SubjectSectionDetailsView(APIView):
                     "status": "fail",
                     "data": {
                         "title": "Could not find the selection",
-                        "message": "Could not find the selection you are" +
-                        " trying to update the subject.",
+                        "message": "Could not find the selection you are"
+                        + " trying to update the subject.",
                     },
                 }
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
@@ -179,7 +179,7 @@ class SubjectSectionDetailsView(APIView):
                 },
             }
             return Response(response, status.HTTP_400_BAD_REQUEST)
-        except:
+        except Exception:
             response = {
                 "status": "error",
                 "message": "There was an error trying to update the subjects.",
@@ -204,7 +204,7 @@ class SubjectSectionDetailsView(APIView):
             subject_section.delete()
 
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except:
+        except Exception:
             response = {
                 "status": "error",
                 "message": "There was an error trying to get the subjects.",
@@ -319,7 +319,8 @@ class SelectionDetailView(APIView):
             selectionQuery = SelectionModel.objects.filter(id=id)
             if selectionQuery:
                 serializedQuerry = self.serializer(
-                    selectionQuery[0], many=False)
+                    selectionQuery[0], many=False
+                )
 
             if selectionQuery and serializedQuerry.data["user"] == req.user.id:
                 selection = SelectionModel.objects.get(id=id)
@@ -327,7 +328,8 @@ class SelectionDetailView(APIView):
 
                 data["modified_on"] = datetime.now()
                 serializer = self.serializer(
-                    selection, data=req.data, many=False, partial=True)
+                    selection, data=req.data, many=False, partial=True
+                )
 
                 if serializer.is_valid():
                     serializer.save()

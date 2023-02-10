@@ -1,6 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from core.models import SectionSchedule, Weekday, SubjectSection, Selection, Subject
+from core.models import (
+    SectionSchedule,
+    Weekday,
+    SubjectSection,
+    Selection,
+    Subject,
+)
 
 PAYLOAD = {
     "start_time": 11,
