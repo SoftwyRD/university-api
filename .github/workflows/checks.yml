@@ -1,0 +1,64 @@
+name: Code checks
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+jobs:
+  lint:
+    name: Lint test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10.9'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.dev.txt
+      - name: Lint
+        run: flake8
+  test:
+    name: Code tests
+    needs: lint
+    runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10.9'
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run migrations
+        run: |
+          cd app/
+          mkdir core/migrations/
+          touch core/migrations/__init__.py
+          python manage.py makemigrations
+          python manage.py migrate
+      - name: Test
+        run: |
+          cd app/
+          python manage.py test
