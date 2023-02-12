@@ -170,7 +170,9 @@ class MeView(APIView):
         try:
             data = request.data
             user = request.user
-            serializer = self.serializer(user, data=data, many=False, partial=True)
+            serializer = self.serializer(
+                user, data=data, many=False, partial=True
+            )
 
             if serializer.is_valid():
                 serializer.save()
