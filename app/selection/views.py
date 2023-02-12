@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from schedule.serializers import SubjectSectionSerializer, SelectionSerializer
+from selection.serializers import SubjectSectionSerializer, SelectionSerializer
 from core.models import SubjectSection, Selection as SelectionModel
 
 from datetime import datetime
@@ -13,7 +13,7 @@ from datetime import datetime
 
 def subject_section_location_url(selection_id, subject_section_id):
     return reverse(
-        "schedule:subject-details", args=[selection_id, subject_section_id]
+        "selection:subject-details", args=[selection_id, subject_section_id]
     )
 
 
