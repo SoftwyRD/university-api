@@ -1,4 +1,4 @@
-from django.urls import path
+from rest_framework.urls import path
 from user import views
 
 app_name = "user"
