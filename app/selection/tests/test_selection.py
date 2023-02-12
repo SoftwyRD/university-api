@@ -7,11 +7,11 @@ from rest_framework.reverse import reverse
 from core.models import Selection as SelectionModel
 from datetime import datetime
 
-SELECTION_URL = reverse("schedule:selection-list")
+SELECTION_URL = reverse("selection:selection-list")
 
 
 def selection_detail_url(id):
-    return reverse("schedule:selection-detail", args=[id])
+    return reverse("selection:selection-detail", args=[id])
 
 
 def create_user(
