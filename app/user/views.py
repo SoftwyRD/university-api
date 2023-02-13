@@ -120,7 +120,7 @@ class UserDetailsView(APIView):
 
             if serializer.is_valid():
                 serializer.save()
-                return Response(status.HTTP_204_NO_CONTENT)
+                return Response(status=status.HTTP_204_NO_CONTENT)
 
             response = {
                 "status": "fail",
@@ -142,7 +142,7 @@ class UserDetailsView(APIView):
             user = get_user_model().objects.get(id=id)
             user.delete()
 
-            return Response(status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as ex:
             response = {
                 "status": "error",
@@ -176,7 +176,7 @@ class MeView(APIView):
 
             if serializer.is_valid():
                 serializer.save()
-                return Response(status.HTTP_204_NO_CONTENT)
+                return Response(status=status.HTTP_204_NO_CONTENT)
 
             response = {
                 "status": "fail",
