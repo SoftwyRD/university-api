@@ -10,7 +10,7 @@ class SelectionSerializer(ModelSerializer):
     class Meta:
         model = SelectionModel
         fields = "__all__"
-        read_only_fields = ["id"]
+        read_only_fields = ["id", "created_on"]
 
 
 class SubjectSerializer(ModelSerializer):
