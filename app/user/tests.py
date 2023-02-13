@@ -145,6 +145,18 @@ class PrivateUserApiTests(APITestCase):
 
         self.assertNotIn("password", profile)
 
+    def test_update_profile_success(self):
+        PAYLOAD = {
+            "email": "anothermail@example.com",
+        }
+
+        res = self.client.patch(ME_URL, PAYLOAD)
+        user = get_user_model().objects.get(username=self.PAYLOAD["username"])
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+        self.assertEqual(user.email, PAYLOAD["email"])
+
 
 class AdminUserApiTests(APITestCase):
     def setUp(self) -> None:

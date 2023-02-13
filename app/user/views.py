@@ -120,7 +120,7 @@ class UserDetailsView(APIView):
 
             if serializer.is_valid():
                 serializer.save()
-                return Response(status.HTTP_204_NO_CONTENT)
+                return Response(status=status.HTTP_204_NO_CONTENT)
 
             response = {
                 "status": "fail",
@@ -142,7 +142,7 @@ class UserDetailsView(APIView):
             user = get_user_model().objects.get(id=id)
             user.delete()
 
-            return Response(status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as ex:
             response = {
                 "status": "error",
@@ -165,3 +165,30 @@ class MeView(APIView):
             },
         }
         return Response(response, status.HTTP_200_OK)
+
+    def patch(self, request, format=None):
+        try:
+            data = request.data
+            user = request.user
+            serializer = self.serializer(
+                user, data=data, many=False, partial=True
+            )
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+            response = {
+                "status": "fail",
+                "data": {
+                    "title": "Could not update the user",
+                    "message": serializer.errors,
+                },
+            }
+            return Response(response, status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "message": ex,
+            }
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
