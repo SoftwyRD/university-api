@@ -17,6 +17,7 @@ class SubjectSerializer(ModelSerializer):
     class Meta:
         model = Subject
         fields = "__all__"
+        read_only_fields = ["id"]
 
 
 class SubjectSectionSerializer(ModelSerializer):
@@ -35,6 +36,7 @@ class SubjectSectionSerializer(ModelSerializer):
             "professor",
             "taken",
         ]
+        read_only_fields = ["id"]
 
     def run_validation(self, data):
         super().run_validation(data)

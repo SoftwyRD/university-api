@@ -20,10 +20,13 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
         ]
         extra_kwargs = {
+            "id": {
+                "read_only": True,
+            },
             "password": {
                 "write_only": True,
                 "min_length": 8,
-            }
+            },
         }
 
     def create(self, validated_data):
