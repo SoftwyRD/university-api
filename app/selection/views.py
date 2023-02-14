@@ -240,7 +240,8 @@ class SelectionListView(APIView):
             response = {
                 "status": "failed",
                 "data": {
-                    "selection": serializer.errors,
+                    "title": "Could not create selection",
+                    "details": serializer.errors,
                 },
             }
             print(serializer.errors)
@@ -299,7 +300,10 @@ class SelectionDetailView(APIView):
             response = {
                 "status": "success",
                 "data": {
-                    "selection": "selection does not exist",
+                    "title": "selection does not exist",
+                    "message": "Could not find any matching"
+                    + " selection.",
+
                 },
             }
 
@@ -307,9 +311,7 @@ class SelectionDetailView(APIView):
         except Exception as ex:
             response = {
                 "status": "error",
-                "data": {
-                    "message": ex,
-                },
+                "message": ex,
             }
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -345,7 +347,7 @@ class SelectionDetailView(APIView):
                 response = {
                     "status": "fail",
                     "data": {
-                        "title": "Could not update the user",
+                        "title": "Could not update the selection",
                         "message": serializer.errors,
                     },
                 }
@@ -353,16 +355,18 @@ class SelectionDetailView(APIView):
 
             response = {
                 "status": "fail",
-                "message": "selection does not exist",
+                "data": {
+                    "title": "Could not update the selection",
+                    "message": "Could not find any matching"
+                    + " selection.",
+                },
             }
 
             return Response(response, status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
             response = {
                 "status": "error",
-                "data": {
-                    "message": ex,
-                },
+                "message": ex,
             }
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -379,23 +383,25 @@ class SelectionDetailView(APIView):
 
                 response = {
                     "status": "success",
-                    "data": "SelectionModel deleted",
+                    "data": None,
                 }
 
                 return Response(response, status.HTTP_204_NO_CONTENT)
 
             response = {
                 "status": "fail",
-                "message": "selection does not exist",
+                "data": {
+                    "title": "Selection does not exist",
+                    "message": "Could not find any matching"
+                    + " selection.",
+                },
             }
 
             return Response(response, status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
             response = {
                 "status": "error",
-                "data": {
-                    "message": ex,
-                },
+                "message": ex,
             }
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
