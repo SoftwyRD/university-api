@@ -200,8 +200,9 @@ class SubjectSectionDetailsView(APIView):
                 response = {
                     "status": "fail",
                     "data": {
-                        "title": "Could not find ",
-                        "details": "",
+                        "title": "Could not find the subject",
+                        "message": "Could not find the subject you are"
+                        + " trying to delete.",
                     },
                 }
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
@@ -244,7 +245,7 @@ class SelectionListView(APIView):
                 return Response(response, status.HTTP_201_CREATED)
 
             response = {
-                "status": "failed",
+                "status": "fail",
                 "data": {
                     "title": "Could not create selection",
                     "details": serializer.errors,
@@ -304,7 +305,7 @@ class SelectionDetailView(APIView):
                 return Response(response, status.HTTP_200_OK)
 
             response = {
-                "status": "success",
+                "status": "fail",
                 "data": {
                     "title": "selection does not exist",
                     "message": "Could not find any matching"

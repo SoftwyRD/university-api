@@ -100,7 +100,7 @@ class SubjectDetailView(views.APIView):
                 return Response(response, status.HTTP_200_OK)
 
             response = {
-                "status": "error",
+                "status": "fail",
                 "data": {
                     "title": "Subject does not exist",
                     "message": "Could not find any matching"
@@ -111,7 +111,7 @@ class SubjectDetailView(views.APIView):
             return Response(response, status.HTTP_404_NOT_FOUND)
         except Exception as ex:
             response = {
-                "status": "fail",
+                "status": "error",
                 "message": ex,
             }
 
