@@ -153,7 +153,7 @@ class PrivateUserApiTests(APITestCase):
         res = self.client.patch(ME_URL, PAYLOAD)
         user = get_user_model().objects.get(username=self.PAYLOAD["username"])
 
-        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         self.assertEqual(user.email, PAYLOAD["email"])
 

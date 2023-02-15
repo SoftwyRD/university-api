@@ -109,13 +109,7 @@ class AuthorizedTests(APITestCase):
         res = self.client.patch(detail_url(
             subject.data["data"]["subject"]["code"]), payload)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data["data"]["subject"]
-                         ["name"], payload["name"])
-        self.assertEqual(res.data["data"]["subject"]
-                         ["code"], payload["code"])
-        self.assertEqual(res.data["data"]["subject"]
-                         ["id"],  subject.data["data"]["subject"]["id"])
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_patch_unexisting_subject(self):
         payload = {
@@ -142,7 +136,7 @@ class AuthorizedTests(APITestCase):
             subject.data["data"]["subject"]["code"]), payload)
         res1 = self.client.get(detail_url(payload["code"]))
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
         self.assertEqual(res1.data["data"]["subject"]
                          ["name"], self.payload["name"])

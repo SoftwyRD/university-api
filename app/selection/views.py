@@ -169,7 +169,13 @@ class SubjectSectionDetailsView(APIView):
 
             if serializer.is_valid():
                 serializer.save()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+                response = {
+                    "status": "success",
+                    "data": {
+                        "subject_section": serializer.data,
+                    },
+                }
+                return Response(response, status.HTTP_200_OK)
 
             response = {
                 "status": "fail",
@@ -381,12 +387,7 @@ class SelectionDetailView(APIView):
                 selection = SelectionModel.objects.get(id=id)
                 selection.delete()
 
-                response = {
-                    "status": "success",
-                    "data": None,
-                }
-
-                return Response(response, status.HTTP_204_NO_CONTENT)
+                return Response(status=status.HTTP_204_NO_CONTENT)
 
             response = {
                 "status": "fail",
