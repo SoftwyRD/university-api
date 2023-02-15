@@ -120,7 +120,15 @@ class UserDetailsView(APIView):
 
             if serializer.is_valid():
                 serializer.save()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+
+                response = {
+                    "status": "success",
+                    "data": {
+                        "user": serializer.data,
+                    },
+                }
+
+                return Response(response, status.HTTP_200_OK)
 
             response = {
                 "status": "fail",
@@ -176,7 +184,15 @@ class MeView(APIView):
 
             if serializer.is_valid():
                 serializer.save()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+
+                response = {
+                    "status": "success",
+                    "data": {
+                        "profile": serializer.data,
+                    },
+                }
+
+                return Response(response, status.HTTP_200_OK)
 
             response = {
                 "status": "fail",

@@ -100,16 +100,18 @@ class SubjectDetailView(views.APIView):
                 return Response(response, status.HTTP_200_OK)
 
             response = {
-                "status": "error",
+                "status": "fail",
                 "data": {
-                    "message": "Subject does not exist",
+                    "title": "Subject does not exist",
+                    "message": "Could not find any matching"
+                    + " subject.",
                 },
             }
 
             return Response(response, status.HTTP_404_NOT_FOUND)
         except Exception as ex:
             response = {
-                "status": "fail",
+                "status": "error",
                 "message": ex,
             }
 
@@ -127,14 +129,7 @@ class SubjectDetailView(views.APIView):
                 if serializer.is_valid():
                     serializer.save()
 
-                    response = {
-                        "status": "success",
-                        "data": {
-                            "subject": serializer.data,
-                        },
-                    }
-
-                    return Response(response, status.HTTP_200_OK)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
 
                 response = {
                     "status": "fail",
@@ -145,19 +140,19 @@ class SubjectDetailView(views.APIView):
                 }
                 return Response(response, status.HTTP_400_BAD_REQUEST)
             response = {
-                "status": "error",
+                "status": "fail",
                 "data": {
-                    "message": "Subject does not exist",
+                    "title": "Subject does not exist",
+                    "message": "Could not find any matching"
+                    + " subject.",
                 },
             }
 
             return Response(response, status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
             response = {
-                "status": "fail",
-                "data": {
-                    "message": ex,
-                },
+                "status": "error",
+                "message": ex,
             }
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -168,21 +163,21 @@ class SubjectDetailView(views.APIView):
                 subject = SubjectModel.objects.get(code=code)
                 subject.delete()
 
-                response = {
-                    "status": "success",
-                    "message": "Subject deleted",
-                }
-                return Response(response, status.HTTP_204_NO_CONTENT)
+                return Response(status=status.HTTP_204_NO_CONTENT)
 
             response = {
-                "status": "error",
-                "message": "Subject does not exist",
+                "status": "fail",
+                "data": {
+                    "title": "Subject does not exist",
+                    "message": "Could not find any matching"
+                    + " subject.",
+                }
             }
 
             return Response(response, status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
             response = {
-                "status": "fail",
+                "status": "error",
                 "message": ex,
             }
 
