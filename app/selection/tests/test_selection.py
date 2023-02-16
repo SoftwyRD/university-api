@@ -12,8 +12,7 @@ SELECTION_URL = reverse("selection:selection-list")
 
 
 def selection_detail_url(id):
-    return reverse("selection:selection-detail",
-                   args=[str(id)])
+    return reverse("selection:selection-detail", args=[str(id)])
 
 
 def create_user(

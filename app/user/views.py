@@ -50,8 +50,10 @@ class UserListView(APIView):
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @extend_schema(request=serializers.UserSerializer,
-                   responses=serializers.UserSerializer)
+    @extend_schema(
+        request=serializers.UserSerializer,
+        responses=serializers.UserSerializer,
+    )
     def post(self, request, format=None):
         try:
             data = request.data
@@ -95,8 +97,7 @@ class UserDetailsView(APIView):
     permission_classes = [IsAdminUser]
     serializer = serializers.UserSerializer
 
-    @extend_schema(request=None,
-                   responses=serializers.UserSerializer)
+    @extend_schema(request=None, responses=serializers.UserSerializer)
     def get(self, request, id, format=None):
         try:
             user = get_user_model().objects.get(id=id)
@@ -116,8 +117,10 @@ class UserDetailsView(APIView):
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @extend_schema(request=serializers.UserSerializer,
-                   responses=serializers.UserSerializer)
+    @extend_schema(
+        request=serializers.UserSerializer,
+        responses=serializers.UserSerializer,
+    )
     def patch(self, request, id, format=None):
         try:
             data = request.data
@@ -169,8 +172,7 @@ class MeView(APIView):
     permission_classes = [IsAuthenticated]
     serializer = serializers.UserSerializer
 
-    @extend_schema(request=None,
-                   responses=serializers.UserSerializer)
+    @extend_schema(request=None, responses=serializers.UserSerializer)
     def get(self, request, format=None):
         user = request.user
         serializer = self.serializer(user, many=False)
@@ -182,8 +184,10 @@ class MeView(APIView):
         }
         return Response(response, status.HTTP_200_OK)
 
-    @extend_schema(request=serializers.UserSerializer,
-                   responses=serializers.UserSerializer)
+    @extend_schema(
+        request=serializers.UserSerializer,
+        responses=serializers.UserSerializer,
+    )
     def patch(self, request, format=None):
         try:
             data = request.data

@@ -8,7 +8,7 @@ SUBJECT_URL = reverse("subject:subject-list")
 
 
 def detail_url(id):
-    return reverse('subject:subject-detail', args=[id])
+    return reverse("subject:subject-detail", args=[id])
 
 
 class SubjectUnauthenticatedTests(TestCase):
@@ -17,10 +17,10 @@ class SubjectUnauthenticatedTests(TestCase):
 
     def test_create_subject_test(self) -> None:
         payload = {
-            'code': 'IDS222',
-            'name': 'Desarrollo de Software 1',
-            'credits': 4,
-            'is_lab': 0,
+            "code": "IDS222",
+            "name": "Desarrollo de Software 1",
+            "credits": 4,
+            "is_lab": 0,
         }
         res = self.client.post(SUBJECT_URL, payload)
 
@@ -29,8 +29,8 @@ class SubjectUnauthenticatedTests(TestCase):
     def test_get_subject_test_success(self) -> None:
 
         SubjectModel.objects.create(
-            code='IDS222',
-            name='Desarrollo de Software 1',
+            code="IDS222",
+            name="Desarrollo de Software 1",
             credits=4,
             is_lab=0,
         )
