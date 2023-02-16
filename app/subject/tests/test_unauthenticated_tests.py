@@ -1,8 +1,6 @@
 from django.test import TestCase
 from core.models import Subject as SubjectModel
-# from subject.serializers import SubjectSerializer
 from rest_framework.reverse import reverse
-# from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework import status
 

@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import (
     IsAdminUser,
     BasePermission,
-    SAFE_METHODS)
+    SAFE_METHODS,
+)
 
 from core.models import Subject as SubjectModel
 from subject.serializers import SubjectSerializer
@@ -17,12 +18,12 @@ class ReadOnly(BasePermission):
 
 class SubjectsListView(views.APIView):
     """View for list subjects in api"""
+
     permission_classes = [IsAdminUser | ReadOnly]
 
     serializer = SubjectSerializer
 
-    @extend_schema(request=None,
-                   responses=SubjectSerializer)
+    @extend_schema(request=None, responses=SubjectSerializer)
     def get(self, req, format=None):
         try:
             subjects = SubjectModel.objects.all()
@@ -32,7 +33,7 @@ class SubjectsListView(views.APIView):
                 "data": {
                     "count": subjects.count(),
                     "subjects": serializer.data,
-                }
+                },
             }
             return Response(response, status=status.HTTP_200_OK)
         except Exception as ex:
@@ -42,8 +43,7 @@ class SubjectsListView(views.APIView):
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @extend_schema(request=SubjectSerializer,
-                   responses=SubjectSerializer)
+    @extend_schema(request=SubjectSerializer, responses=SubjectSerializer)
     def post(self, req, format=None):
         try:
             data = req.data
@@ -86,8 +86,7 @@ class SubjectDetailView(views.APIView):
     permission_classes = [IsAdminUser | ReadOnly]
     serializer = SubjectSerializer
 
-    @extend_schema(request=None,
-                   responses=SubjectSerializer)
+    @extend_schema(request=None, responses=SubjectSerializer)
     def get(self, req, id, format=None):
         try:
             if SubjectModel.objects.filter(id=id):
@@ -107,8 +106,7 @@ class SubjectDetailView(views.APIView):
                 "status": "fail",
                 "data": {
                     "title": "Subject does not exist",
-                    "message": "Could not find any matching"
-                    + " subject.",
+                    "message": "Could not find any matching" + " subject.",
                 },
             }
 
@@ -121,8 +119,7 @@ class SubjectDetailView(views.APIView):
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @extend_schema(request=SubjectSerializer,
-                   responses=SubjectSerializer)
+    @extend_schema(request=SubjectSerializer, responses=SubjectSerializer)
     def patch(self, req, id, format=None):
         try:
             if SubjectModel.objects.filter(id=id):
@@ -130,7 +127,8 @@ class SubjectDetailView(views.APIView):
                 data = req.data
 
                 serializer = self.serializer(
-                    subject, data=data, many=False, partial=True)
+                    subject, data=data, many=False, partial=True
+                )
 
                 if serializer.is_valid():
                     serializer.save()
@@ -149,8 +147,7 @@ class SubjectDetailView(views.APIView):
                 "status": "fail",
                 "data": {
                     "title": "Subject does not exist",
-                    "message": "Could not find any matching"
-                    + " subject.",
+                    "message": "Could not find any matching" + " subject.",
                 },
             }
 
@@ -175,9 +172,8 @@ class SubjectDetailView(views.APIView):
                 "status": "fail",
                 "data": {
                     "title": "Subject does not exist",
-                    "message": "Could not find any matching"
-                    + " subject.",
-                }
+                    "message": "Could not find any matching" + " subject.",
+                },
             }
 
             return Response(response, status.HTTP_400_BAD_REQUEST)
