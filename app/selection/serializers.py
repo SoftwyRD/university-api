@@ -31,11 +31,17 @@ class SubjectSectionSerializer(ModelSerializer):
             "id",
             "selection",
             "section",
+            "subject",
             "subject_code",
             "subject_name",
             "professor",
             "taken",
         ]
+        extra_kwargs = {
+            "subject": {
+                "write_only": True,
+            }
+        }
         read_only_fields = ["id"]
 
     def run_validation(self, data):
