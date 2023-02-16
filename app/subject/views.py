@@ -7,6 +7,7 @@ from rest_framework.permissions import (
 
 from core.models import Subject as SubjectModel
 from subject.serializers import SubjectSerializer
+from drf_spectacular.utils import extend_schema
 
 
 class ReadOnly(BasePermission):
@@ -17,10 +18,11 @@ class ReadOnly(BasePermission):
 class SubjectsListView(views.APIView):
     """View for list subjects in api"""
     permission_classes = [IsAdminUser | ReadOnly]
-    # permission_classes = [IsAuthenticated | ReadOnly]
 
     serializer = SubjectSerializer
 
+    @extend_schema(request=None,
+                   responses=SubjectSerializer)
     def get(self, req, format=None):
         try:
             subjects = SubjectModel.objects.all()
@@ -40,6 +42,8 @@ class SubjectsListView(views.APIView):
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @extend_schema(request=SubjectSerializer,
+                   responses=SubjectSerializer)
     def post(self, req, format=None):
         try:
             data = req.data
@@ -79,10 +83,11 @@ class SubjectDetailView(views.APIView):
     View for GET, PUT and PATCH subject details
     """
 
-    # permission_classes = [IsAdminUser | (IsAuthenticated & ReadOnly)]
     permission_classes = [IsAdminUser | ReadOnly]
     serializer = SubjectSerializer
 
+    @extend_schema(request=None,
+                   responses=SubjectSerializer)
     def get(self, req, code, format=None):
         try:
             code = code.upper()
@@ -117,6 +122,8 @@ class SubjectDetailView(views.APIView):
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @extend_schema(request=SubjectSerializer,
+                   responses=SubjectSerializer)
     def patch(self, req, code, format=None):
         try:
             if SubjectModel.objects.filter(code=code):

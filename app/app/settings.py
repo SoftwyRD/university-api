@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
-import environ, os
+import environ
+import os
 
 env = environ.Env()
 env.read_env()
@@ -182,9 +183,9 @@ AUTH_USER_MODEL = "core.User"
 CORS_ALLOWED_ORIGINS = []
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Your Project API",
-    "DESCRIPTION": "Your project description",
-    "VERSION": "1.0.0",
+    "TITLE": "University-API",
+    "DESCRIPTION": "Api which lets create a simulation of university subject selection",
+    "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
     # OTHER SETTINGS
 }

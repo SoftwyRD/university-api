@@ -5,10 +5,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from selection.serializers import SubjectSectionSerializer, SelectionSerializer
 from core.models import SubjectSection, Selection as SelectionModel
+from drf_spectacular.utils import extend_schema
 
 from datetime import datetime
-
-# Create your views here.
 
 
 def subject_section_location_url(selection_id, subject_section_id):
@@ -20,6 +19,8 @@ def subject_section_location_url(selection_id, subject_section_id):
 class SubjectSectionListView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=None,
+                   responses=SubjectSectionSerializer)
     def get(self, request, selection_id, format=None):
         try:
             user = request.user
@@ -56,6 +57,8 @@ class SubjectSectionListView(APIView):
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @extend_schema(request=SubjectSectionSerializer,
+                   responses=SubjectSectionSerializer)
     def post(self, request, selection_id, format=None):
         try:
             user = request.user
@@ -114,6 +117,8 @@ class SubjectSectionListView(APIView):
 class SubjectSectionDetailsView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=None,
+                   responses=SubjectSectionSerializer)
     def get(self, request, selection_id, subject_section_id, format=None):
         try:
             user = request.user
@@ -146,6 +151,8 @@ class SubjectSectionDetailsView(APIView):
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @extend_schema(request=SubjectSectionSerializer,
+                   responses=SubjectSectionSerializer)
     def patch(self, request, selection_id, subject_section_id, format=None):
         try:
             user = request.user
@@ -223,6 +230,30 @@ class SelectionListView(APIView):
     permission_classes = [IsAuthenticated]
     serializer = SelectionSerializer
 
+    def get(self, req, format=None):
+        try:
+            selection = SelectionModel.objects.all().filter(user=req.user.id)
+
+            serializer = self.serializer(selection, many=True)
+
+            response = {
+                "status": "success",
+                "data": {
+                    "count": selection.count(),
+                    "selections": serializer.data,
+                },
+            }
+
+            return Response(response, status.HTTP_200_OK)
+        except Exception as ex:
+            response = {
+                "status": "error",
+                "message": ex,
+            }
+            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @extend_schema(request=SelectionSerializer,
+                   responses=SelectionSerializer)
     def post(self, req, format=None):
         try:
             selection = {
@@ -261,33 +292,13 @@ class SelectionListView(APIView):
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def get(self, req, format=None):
-        try:
-            selection = SelectionModel.objects.all().filter(user=req.user.id)
-
-            serializer = self.serializer(selection, many=True)
-
-            response = {
-                "status": "success",
-                "data": {
-                    "count": selection.count(),
-                    "selections": serializer.data,
-                },
-            }
-
-            return Response(response, status.HTTP_200_OK)
-        except Exception as ex:
-            response = {
-                "status": "error",
-                "message": ex,
-            }
-            return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 class SelectionDetailView(APIView):
     permission_classes = [IsAuthenticated]
     serializer = SelectionSerializer
 
+    @extend_schema(request=None,
+                   responses=SelectionSerializer)
     def get(self, req, id, format=None):
         try:
             selection = SelectionModel.objects.filter(id=id)[0]
@@ -323,6 +334,8 @@ class SelectionDetailView(APIView):
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @extend_schema(request=SelectionSerializer,
+                   responses=SelectionSerializer)
     def patch(self, req, id, format=None):
         try:
             selectionQuery = SelectionModel.objects.filter(id=id)
