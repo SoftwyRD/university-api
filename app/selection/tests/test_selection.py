@@ -6,12 +6,14 @@ from rest_framework.reverse import reverse
 
 from core.models import Selection as SelectionModel
 from datetime import datetime
+import uuid
 
 SELECTION_URL = reverse("selection:selection-list")
 
 
 def selection_detail_url(id):
-    return reverse("selection:selection-detail", args=[id])
+    return reverse("selection:selection-detail",
+                   args=[str(id)])  # [id])
 
 
 def create_user(
@@ -49,15 +51,15 @@ class SelectionTestsUnaythorized(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_get_selection(self):
-        res = self.client.get(selection_detail_url(0))
+        res = self.client.get(selection_detail_url(uuid.uuid1()))
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_delete_selection(self):
-        res = self.client.delete(selection_detail_url(0))
+        res = self.client.delete(selection_detail_url(uuid.uuid1()))
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_patch_selection(self):
-        res = self.client.patch(selection_detail_url(0))
+        res = self.client.patch(selection_detail_url(uuid.uuid1()))
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
@@ -83,8 +85,6 @@ class SelectionTestsAuthorized(APITestCase):
         }
 
         res = self.client.post(SELECTION_URL, payload)
-
-        # print(res.data["data"]["selection"])
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
