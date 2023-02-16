@@ -18,6 +18,7 @@ def subject_section_location_url(selection_id, subject_section_id):
 
 class SubjectSectionListView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = SubjectSectionSerializer
 
     @extend_schema(request=None, responses=SubjectSectionSerializer)
     def get(self, request, selection_id, format=None):
@@ -39,7 +40,7 @@ class SubjectSectionListView(APIView):
             subject_section = SubjectSection.objects.filter(
                 selection=selection
             )
-            serializer = SubjectSectionSerializer(subject_section, many=True)
+            serializer = self.serializer_class(subject_section, many=True)
 
             response = {
                 "status": "success",
@@ -78,7 +79,7 @@ class SubjectSectionListView(APIView):
             data = request.data
             data["selection"] = selection
 
-            serializer = SubjectSectionSerializer(data=data, many=False)
+            serializer = self.serializer_class(data=data, many=False)
             if serializer.is_valid():
                 serializer.save()
                 subject_section = serializer.data
@@ -116,6 +117,7 @@ class SubjectSectionListView(APIView):
 
 class SubjectSectionDetailsView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = SubjectSectionSerializer
 
     @extend_schema(request=None, responses=SubjectSectionSerializer)
     def get(self, request, selection_id, subject_section_id, format=None):
@@ -135,7 +137,7 @@ class SubjectSectionDetailsView(APIView):
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
 
             subject_section = SubjectSection.objects.get(id=subject_section_id)
-            serializer = SubjectSectionSerializer(subject_section, many=False)
+            serializer = self.serializer_class(subject_section, many=False)
             response = {
                 "status": "success",
                 "data": {
@@ -170,7 +172,7 @@ class SubjectSectionDetailsView(APIView):
 
             data = request.data
             subject_section = SubjectSection.objects.get(id=subject_section_id)
-            serializer = SubjectSectionSerializer(
+            serializer = self.serializer_class(
                 subject_section, data=data, many=False, partial=True
             )
 
@@ -228,13 +230,13 @@ class SubjectSectionDetailsView(APIView):
 
 class SelectionListView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer = SelectionSerializer
+    serializer_class = SelectionSerializer
 
     def get(self, req, format=None):
         try:
             selection = SelectionModel.objects.all().filter(user=req.user.id)
 
-            serializer = self.serializer(selection, many=True)
+            serializer = self.serializer_class(selection, many=True)
 
             response = {
                 "status": "success",
@@ -259,7 +261,7 @@ class SelectionListView(APIView):
                 "user": req.user.id,
                 "name": req.data["name"],
             }
-            serializer = self.serializer(data=selection, many=False)
+            serializer = self.serializer_class(data=selection, many=False)
 
             if serializer.is_valid():
                 serializer.save()
@@ -294,13 +296,13 @@ class SelectionListView(APIView):
 
 class SelectionDetailView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer = SelectionSerializer
+    serializer_class = SelectionSerializer
 
     @extend_schema(request=None, responses=SelectionSerializer)
     def get(self, req, id, format=None):
         try:
             selection = SelectionModel.objects.filter(id=id)[0]
-            serialized = self.serializer(selection, many=False)
+            serialized = self.serializer_class(selection, many=False)
 
             if selection and serialized.data["user"] == req.user.id:
 
@@ -335,7 +337,7 @@ class SelectionDetailView(APIView):
         try:
             selectionQuery = SelectionModel.objects.filter(id=id)
             if selectionQuery:
-                serializedQuerry = self.serializer(
+                serializedQuerry = self.serializer_class(
                     selectionQuery[0], many=False
                 )
 
@@ -344,7 +346,7 @@ class SelectionDetailView(APIView):
                 data = dict(req.data)
 
                 data["modified_on"] = datetime.now()
-                serializer = self.serializer(
+                serializer = self.serializer_class(
                     selection, data=req.data, many=False, partial=True
                 )
 
@@ -389,7 +391,7 @@ class SelectionDetailView(APIView):
         try:
             selection = SelectionModel.objects.filter(id=id)
             if selection:
-                serialized = self.serializer(selection[0], many=False)
+                serialized = self.serializer_class(selection[0], many=False)
 
             if selection and serialized.data["user"] == req.user.id:
                 selection = SelectionModel.objects.get(id=id)

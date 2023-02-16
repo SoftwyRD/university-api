@@ -20,14 +20,13 @@ class SubjectsListView(views.APIView):
     """View for list subjects in api"""
 
     permission_classes = [IsAdminUser | ReadOnly]
-
-    serializer = SubjectSerializer
+    serializer_class = SubjectSerializer
 
     @extend_schema(request=None, responses=SubjectSerializer)
     def get(self, req, format=None):
         try:
             subjects = SubjectModel.objects.all()
-            serializer = self.serializer(subjects, many=True)
+            serializer = self.serializer_class(subjects, many=True)
             response = {
                 "status": "success",
                 "data": {
@@ -47,7 +46,7 @@ class SubjectsListView(views.APIView):
     def post(self, req, format=None):
         try:
             data = req.data
-            serializer = self.serializer(data=data, many=False)
+            serializer = self.serializer_class(data=data, many=False)
 
             if serializer.is_valid():
                 serializer.save()
@@ -84,14 +83,14 @@ class SubjectDetailView(views.APIView):
     """
 
     permission_classes = [IsAdminUser | ReadOnly]
-    serializer = SubjectSerializer
+    serializer_class = SubjectSerializer
 
     @extend_schema(request=None, responses=SubjectSerializer)
     def get(self, req, id, format=None):
         try:
             if SubjectModel.objects.filter(id=id):
                 subject = SubjectModel.objects.get(id=id)
-                serializer = self.serializer(subject, many=False)
+                serializer = self.serializer_class(subject, many=False)
 
                 response = {
                     "status": "success",
@@ -126,7 +125,7 @@ class SubjectDetailView(views.APIView):
                 subject = SubjectModel.objects.get(id=id)
                 data = req.data
 
-                serializer = self.serializer(
+                serializer = self.serializer_class(
                     subject, data=data, many=False, partial=True
                 )
 

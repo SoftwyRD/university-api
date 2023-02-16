@@ -27,13 +27,13 @@ class RefreshTokenView(TokenRefreshView):
 
 class UserListView(APIView):
     permission_classes = [PublicPostRequest]
-    serializer = serializers.UserSerializer
+    serializer_class = serializers.UserSerializer
 
     @extend_schema(request=None, responses=serializers.UserSerializer)
     def get(self, request, format=None):
         try:
             users = get_user_model().objects.all()
-            serializer = self.serializer(users, many=True)
+            serializer = self.serializer_class(users, many=True)
 
             response = {
                 "status": "success",
@@ -57,7 +57,7 @@ class UserListView(APIView):
     def post(self, request, format=None):
         try:
             data = request.data
-            serializer = self.serializer(data=data, many=False)
+            serializer = self.serializer_class(data=data, many=False)
 
             if serializer.is_valid():
                 serializer.save()
@@ -95,13 +95,13 @@ class UserListView(APIView):
 
 class UserDetailsView(APIView):
     permission_classes = [IsAdminUser]
-    serializer = serializers.UserSerializer
+    serializer_class = serializers.UserSerializer
 
     @extend_schema(request=None, responses=serializers.UserSerializer)
     def get(self, request, id, format=None):
         try:
             user = get_user_model().objects.get(id=id)
-            serializer = self.serializer(user, many=False)
+            serializer = self.serializer_class(user, many=False)
 
             response = {
                 "status": "success",
@@ -125,7 +125,7 @@ class UserDetailsView(APIView):
         try:
             data = request.data
             user = get_user_model().objects.get(id=id)
-            serializer = self.serializer(user, data=data, many=False)
+            serializer = self.serializer_class(user, data=data, many=False)
 
             if serializer.is_valid():
                 serializer.save()
@@ -170,12 +170,12 @@ class UserDetailsView(APIView):
 
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer = serializers.UserSerializer
+    serializer_class = serializers.UserSerializer
 
     @extend_schema(request=None, responses=serializers.UserSerializer)
     def get(self, request, format=None):
         user = request.user
-        serializer = self.serializer(user, many=False)
+        serializer = self.serializer_class(user, many=False)
         response = {
             "status": "success",
             "data": {
@@ -192,7 +192,7 @@ class MeView(APIView):
         try:
             data = request.data
             user = request.user
-            serializer = self.serializer(
+            serializer = self.serializer_class(
                 user, data=data, many=False, partial=True
             )
 
