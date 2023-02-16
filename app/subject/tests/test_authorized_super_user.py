@@ -52,47 +52,31 @@ class AuthorizedTests(APITestCase):
         subject = self.client.post(SUBJECTS_URL, self.payload)
 
         res = self.client.get(detail_url(
-            subject.data["data"]["subject"]["code"]))
+            subject.data["data"]["subject"]["id"]))
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data["data"]["subject"]
                          ["name"], subject.data["data"]["subject"]["name"])
 
     def test_get_unexisting_subject(self):
-        res = self.client.get(detail_url('aaaaaa'))
+        res = self.client.get(detail_url(1))
 
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_get_created_subject_by_code_lower_case(self):
-        payload = {
-            'code': 'iDS222',
-            'name': 'Desarrollo de Software 1',
-            'credits': 4,
-            'is_lab': 0,
-        }
-        codeLower = 'IdS222'
-        subject = self.client.post(SUBJECTS_URL, payload)
-
-        res = self.client.get(detail_url(codeLower))
-
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data["data"]["subject"]
-                         ["name"], subject.data["data"]["subject"]["name"])
 
     def test_delete_existing_subject(self):
         subject = self.client.post(SUBJECTS_URL, self.payload)
 
         res = self.client.delete(detail_url(
-            subject.data["data"]["subject"]["code"]))
+            subject.data["data"]["subject"]["id"]))
 
         res1 = self.client.get(detail_url(
-            subject.data["data"]["subject"]["code"]))
+            subject.data["data"]["subject"]["id"]))
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(res1.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_unexisting_subject(self):
-        res = self.client.delete(detail_url("111111"))
+        res = self.client.delete(detail_url(1))
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -107,7 +91,7 @@ class AuthorizedTests(APITestCase):
         }
 
         res = self.client.patch(detail_url(
-            subject.data["data"]["subject"]["code"]), payload)
+            subject.data["data"]["subject"]["id"]), payload)
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
@@ -119,28 +103,6 @@ class AuthorizedTests(APITestCase):
             'is_lab': 0,
         }
 
-        res = self.client.patch(detail_url("111111"), payload)
+        res = self.client.patch(detail_url(1), payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_patch_existing_subject_with_not_complete_payload(self):
-        subject = self.client.post(SUBJECTS_URL, self.payload)
-
-        payload = {
-            'code': 'IDS224',
-            'credits': 3,
-            'is_lab': 0,
-        }
-
-        res = self.client.patch(detail_url(
-            subject.data["data"]["subject"]["code"]), payload)
-        res1 = self.client.get(detail_url(payload["code"]))
-
-        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-
-        self.assertEqual(res1.data["data"]["subject"]
-                         ["name"], self.payload["name"])
-        self.assertEqual(res1.data["data"]["subject"]
-                         ["code"], payload["code"])
-        self.assertEqual(res1.data["data"]["subject"]
-                         ["credits"], payload["credits"])

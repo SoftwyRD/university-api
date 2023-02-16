@@ -42,11 +42,11 @@ class SubjectUnauthenticatedTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_delete_subject(self):
-        res = self.client.delete(detail_url("111111"))
+        res = self.client.delete(detail_url(1))
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_patch_subject(self):
-        res = self.client.patch(detail_url("111111"))
+        res = self.client.patch(detail_url(1))
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)

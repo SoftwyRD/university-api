@@ -88,11 +88,10 @@ class SubjectDetailView(views.APIView):
 
     @extend_schema(request=None,
                    responses=SubjectSerializer)
-    def get(self, req, code, format=None):
+    def get(self, req, id, format=None):
         try:
-            code = code.upper()
-            if SubjectModel.objects.filter(code=code):
-                subject = SubjectModel.objects.get(code=code)
+            if SubjectModel.objects.filter(id=id):
+                subject = SubjectModel.objects.get(id=id)
                 serializer = self.serializer(subject, many=False)
 
                 response = {
@@ -124,10 +123,10 @@ class SubjectDetailView(views.APIView):
 
     @extend_schema(request=SubjectSerializer,
                    responses=SubjectSerializer)
-    def patch(self, req, code, format=None):
+    def patch(self, req, id, format=None):
         try:
-            if SubjectModel.objects.filter(code=code):
-                subject = SubjectModel.objects.get(code=code)
+            if SubjectModel.objects.filter(id=id):
+                subject = SubjectModel.objects.get(id=id)
                 data = req.data
 
                 serializer = self.serializer(
@@ -164,10 +163,10 @@ class SubjectDetailView(views.APIView):
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def delete(self, req, code, format=None):
+    def delete(self, req, id, format=None):
         try:
-            if SubjectModel.objects.filter(code=code):
-                subject = SubjectModel.objects.get(code=code)
+            if SubjectModel.objects.filter(id=id):
+                subject = SubjectModel.objects.get(id=id)
                 subject.delete()
 
                 return Response(status=status.HTTP_204_NO_CONTENT)

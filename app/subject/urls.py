@@ -5,5 +5,5 @@ app_name = "subject"
 
 urlpatterns = [
     path("", SubjectsListView.as_view(), name="subject-list"),
-    path("<str:code>", SubjectDetailView.as_view(), name="subject-detail"),
+    path("<int:id>", SubjectDetailView.as_view(), name="subject-detail"),
 ]
