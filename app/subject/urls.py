@@ -1,3 +1,5 @@
+"""Subject URLs."""
+
 from rest_framework.urls import path
 from subject.views import SubjectsListView, SubjectDetailView
 

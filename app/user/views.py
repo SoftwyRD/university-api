@@ -1,7 +1,4 @@
-"""
-User views
-
-"""
+"""User views"""
 
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -22,6 +19,7 @@ schema_name = "user"
 
 def user_location_url(user_id):
     """Get reverse url for user details"""
+
     return reverse("user:details", args=[user_id])
 
 
@@ -57,6 +55,7 @@ class UserListView(APIView):
     )
     def get(self, request, format=None):
         """Get all users"""
+
         try:
             users = get_user_model().objects.all()
             serializer = self.serializer_class(users, many=True)
@@ -83,6 +82,7 @@ class UserListView(APIView):
     )
     def post(self, request, format=None):
         """Create new user"""
+
         try:
             data = request.data
             serializer = self.serializer_class(data=data, many=False)
@@ -135,6 +135,7 @@ class UserDetailsView(APIView):
     )
     def get(self, request, id, format=None):
         """Get user details"""
+
         try:
             user = get_user_model().objects.get(id=id)
             serializer = self.serializer_class(user, many=False)
@@ -160,6 +161,7 @@ class UserDetailsView(APIView):
     )
     def patch(self, request, id, format=None):
         """Update user details"""
+
         try:
             data = request.data
             user = get_user_model().objects.get(id=id)
@@ -199,6 +201,7 @@ class UserDetailsView(APIView):
     )
     def delete(self, request, id, format=None):
         """Delete user"""
+
         try:
             user = get_user_model().objects.get(id=id)
             user.delete()
@@ -243,6 +246,7 @@ class MeView(APIView):
     )
     def patch(self, request, format=None):
         """Update logged user details"""
+
         try:
             data = request.data
             user = request.user

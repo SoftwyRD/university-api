@@ -1,3 +1,5 @@
+"""Selection URL Configuration"""
+
 from selection import views
 from rest_framework.urls import path
 

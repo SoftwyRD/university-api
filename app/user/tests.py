@@ -1,10 +1,11 @@
+"""User app tests."""
+
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 from user.serializers import UserSerializer
 
-# Create your tests here.
 
 LOGIN_URL = reverse("user:pair-token")
 LOGIN_REFRESH_URL = reverse("user:refresh-token")
@@ -13,11 +14,16 @@ ME_URL = reverse("user:me")
 
 
 def user_detail_url(user_id):
+    """Return user detail URL"""
     return reverse("user:details", args=[user_id])
 
 
 class PublicUserApiTests(APITestCase):
+    """Test the publicly available user API"""
+
     def setUp(self) -> None:
+        """Set up the test client"""
+
         self.client = APIClient()
         self.PAYLOAD = {
             "first_name": "Test",
@@ -31,6 +37,8 @@ class PublicUserApiTests(APITestCase):
         self.client.force_authenticate(user)
 
     def test_register_user_success(self):
+        """Test registering a new user is successful"""
+
         PAYLOAD = {
             "first_name": "User",
             "last_name": "Test",
@@ -61,6 +69,8 @@ class PublicUserApiTests(APITestCase):
         self.assertEqual(user["username"], PAYLOAD["username"])
 
     def test_login_success(self):
+        """Test logging in a user is successful"""
+
         PAYLOAD = {
             "username": self.PAYLOAD["username"],
             "password": self.PAYLOAD["password"],
@@ -85,6 +95,8 @@ class PublicUserApiTests(APITestCase):
         self.assertIn("refresh", tokens)
 
     def test_login_not_registered(self):
+        """Test logging in a user that is not registered"""
+
         PAYLOAD = {
             "username": "not_an_valid_user",
             "password": "not_a_valid_password",
@@ -108,7 +120,11 @@ class PublicUserApiTests(APITestCase):
 
 
 class PrivateUserApiTests(APITestCase):
+    """Test the private user API"""
+
     def setUp(self) -> None:
+        """Set up the test client"""
+
         self.client = APIClient()
 
         self.PAYLOAD = {
@@ -122,6 +138,8 @@ class PrivateUserApiTests(APITestCase):
         self.client.force_authenticate(self.user)
 
     def test_retrieve_profile_success(self):
+        """Test retrieving profile for logged in user"""
+
         res = self.client.get(ME_URL)
         data = res.data
 
@@ -146,6 +164,8 @@ class PrivateUserApiTests(APITestCase):
         self.assertNotIn("password", profile)
 
     def test_update_profile_success(self):
+        """Test updating the user profile for authenticated user"""
+
         PAYLOAD = {
             "email": "anothermail@example.com",
         }
@@ -159,7 +179,11 @@ class PrivateUserApiTests(APITestCase):
 
 
 class AdminUserApiTests(APITestCase):
+    """Test the admin user API"""
+
     def setUp(self) -> None:
+        """Set up the test client"""
+
         self.client = APIClient()
 
         PAYLOAD = {
@@ -185,6 +209,8 @@ class AdminUserApiTests(APITestCase):
         self.user = get_user_model().objects.create(**PAYLOAD)
 
     def test_get_user(self):
+        """Test getting a user"""
+
         USER_DETAIL_URL = user_detail_url(self.user.id)
 
         res = self.client.get(USER_DETAIL_URL)
@@ -212,6 +238,8 @@ class AdminUserApiTests(APITestCase):
         self.assertNotIn("password", res_user)
 
     def test_get_all_users(self):
+        """Test getting all users"""
+
         users = get_user_model().objects.all()
 
         res = self.client.get(USER_LIST_URL)

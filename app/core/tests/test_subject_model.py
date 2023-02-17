@@ -1,3 +1,5 @@
+"""Test subject model."""
+
 from django.test import TestCase
 from core.models import Subject
 
@@ -10,12 +12,18 @@ PAYLOAD = {
 
 
 def create_subject(**params):
+    """Helper function to create a subject"""\
+
     subject = Subject.objects.create(**params)
     return subject
 
 
 class SubjectModelTests(TestCase):
+    """Test subject model"""
+
     def test_create_subject_success(self):
+        """Test creating a subject"""
+
         subject = create_subject(**PAYLOAD)
 
         self.assertEqual(subject.code, PAYLOAD["code"])
@@ -24,6 +32,8 @@ class SubjectModelTests(TestCase):
         self.assertEqual(subject.is_lab, PAYLOAD["is_lab"])
 
     def test_partial_update_subject(self):
+        """Test updating a subject"""
+
         new_credits = 4
         subject = create_subject(**PAYLOAD)
         Subject.objects.update(credits=new_credits)
@@ -35,6 +45,8 @@ class SubjectModelTests(TestCase):
         self.assertEqual(subject.is_lab, PAYLOAD["is_lab"])
 
     def test_delete_subject(self):
+        """Test deleting a subject"""
+
         subject = create_subject(**PAYLOAD)
         subject.delete()
         subject = Subject.objects.filter(credits=PAYLOAD["credits"])
@@ -42,12 +54,16 @@ class SubjectModelTests(TestCase):
         self.assertFalse(subject)
 
     def test_get_subject(self):
+        """Test getting a subject"""
+
         create_subject(**PAYLOAD)
         subject = Subject.objects.get(credits=PAYLOAD["credits"])
 
         self.assertTrue(subject)
 
     def test_get_all_subjects(self):
+        """Test getting all subjects"""
+
         create_subject(**PAYLOAD)
 
         PAYLOAD.update(

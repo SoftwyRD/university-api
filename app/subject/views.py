@@ -1,6 +1,4 @@
-"""
-Views for subject app
-"""
+"""Views for subject app"""
 
 from django.urls import reverse
 from rest_framework import status, views
@@ -19,6 +17,8 @@ schema_name = "subject"
 
 
 def subject_location_url(id):
+    """Return subject location url"""
+
     return reverse("subject:subject-detail", args=[id])
 
 
@@ -44,6 +44,7 @@ class SubjectsListView(views.APIView):
     )
     def get(self, req, format=None):
         """Get all subjects"""
+
         try:
             subjects = SubjectModel.objects.all()
             serializer = self.serializer_class(subjects, many=True)
@@ -69,6 +70,7 @@ class SubjectsListView(views.APIView):
     )
     def post(self, req, format=None):
         """Create new subject"""
+
         try:
             data = req.data
             serializer = self.serializer_class(data=data, many=False)
@@ -110,9 +112,7 @@ class SubjectsListView(views.APIView):
 
 @extend_schema(tags=[schema_name])
 class SubjectDetailView(views.APIView):
-    """
-    View for GET, PUT and PATCH subject details
-    """
+    """View for GET, PUT and PATCH subject details"""
 
     permission_classes = [IsAdminUser | ReadOnly]
     serializer_class = SubjectSerializer
@@ -124,6 +124,7 @@ class SubjectDetailView(views.APIView):
     )
     def get(self, req, id, format=None):
         """Get subject details"""
+
         try:
             if SubjectModel.objects.filter(id=id):
                 subject = SubjectModel.objects.get(id=id)
@@ -162,6 +163,7 @@ class SubjectDetailView(views.APIView):
     )
     def patch(self, req, id, format=None):
         """Update subject details"""
+
         try:
             if SubjectModel.objects.filter(id=id):
                 subject = SubjectModel.objects.get(id=id)
@@ -208,6 +210,7 @@ class SubjectDetailView(views.APIView):
     )
     def delete(self, req, id, format=None):
         """Delete subject"""
+
         try:
             if SubjectModel.objects.filter(id=id):
                 subject = SubjectModel.objects.get(id=id)

@@ -1,3 +1,5 @@
+"""Test selection section model."""
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from core.models import Selection, Subject, SubjectSection
@@ -10,12 +12,18 @@ PAYLOAD = {
 
 
 def create_selection_section(**params):
+    """Helper function to create a selection section"""
+
     selection_section = SubjectSection.objects.create(**params)
     return selection_section
 
 
 class SelectionSectionModelTests(TestCase):
+    """Test selection section model"""
+
     def setUp(self) -> None:
+        """Create a user, selection, and subject"""
+
         self.user = get_user_model().objects.create(
             first_name="Test",
             last_name="User",
@@ -41,6 +49,8 @@ class SelectionSectionModelTests(TestCase):
         )
 
     def test_create_selection_section_success(self):
+        """Test creating a selection section"""
+
         selection_section = create_selection_section(**PAYLOAD)
 
         self.assertEqual(selection_section.selection, PAYLOAD["selection"])
@@ -50,6 +60,8 @@ class SelectionSectionModelTests(TestCase):
         self.assertEqual(selection_section.taken, PAYLOAD["taken"])
 
     def test_partial_update_selection_section(self):
+        """Test updating a selection section"""
+
         new_professor = "Michael"
         selection_section = create_selection_section(**PAYLOAD)
         SubjectSection.objects.update(professor=new_professor)
@@ -62,6 +74,8 @@ class SelectionSectionModelTests(TestCase):
         self.assertEqual(selection_section.taken, PAYLOAD["taken"])
 
     def test_delete_selection_section(self):
+        """Test deleting a selection section"""
+
         selection_section = create_selection_section(**PAYLOAD)
         selection_section.delete()
         selection_section = SubjectSection.objects.filter(
@@ -71,6 +85,8 @@ class SelectionSectionModelTests(TestCase):
         self.assertFalse(selection_section)
 
     def test_get_selection_section(self):
+        """Test getting a selection section"""
+
         create_selection_section(**PAYLOAD)
         selection_section = SubjectSection.objects.get(
             professor=PAYLOAD["professor"]
@@ -79,6 +95,8 @@ class SelectionSectionModelTests(TestCase):
         self.assertTrue(selection_section)
 
     def test_get_all_selection_sections(self):
+        """Test getting all selection sections"""
+
         create_selection_section(**PAYLOAD)
 
         PAYLOAD.update(

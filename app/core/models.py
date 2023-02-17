@@ -1,3 +1,5 @@
+"""Models for the core app."""
+
 from __future__ import annotations
 from django.conf import settings
 from django.contrib.auth.models import (
@@ -10,10 +12,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from uuid import uuid4
 
-# Create your models here.
-
 
 class UserManager(BaseUserManager):
+    """Custom user manager for the User model."""
+
     def create(
         self,
         first_name,
@@ -23,6 +25,8 @@ class UserManager(BaseUserManager):
         password,
         middle_name=None,
     ) -> User:
+        """Create a new user with the given details."""
+
         user = self.model(
             first_name=first_name,
             middle_name=middle_name,
@@ -44,6 +48,8 @@ class UserManager(BaseUserManager):
         password,
         middle_name=None,
     ) -> User:
+        """Create a new superuser with the given details."""
+
         user = self.create(
             first_name, last_name, username, email, password, middle_name
         )
@@ -53,10 +59,13 @@ class UserManager(BaseUserManager):
         return user
 
     def normalize_email(self, email: str):
+        """Normalize the email address by lowercasing the domain part of it."""
         return email.lower()
 
 
 class User(AbstractUser, PermissionsMixin):
+    """Custom user model for the app."""
+
     id = models.AutoField(primary_key=True, unique=True, editable=False)
     first_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50, null=True)
@@ -77,6 +86,8 @@ class User(AbstractUser, PermissionsMixin):
 
 
 class Subject(models.Model):
+    """Model for the subjects."""
+
     id = models.AutoField(primary_key=True, unique=True, editable=False)
     code = models.CharField(max_length=7, unique=True)
     name = models.CharField(max_length=255, unique=True)
@@ -87,11 +98,14 @@ class Subject(models.Model):
         return f"{self.code} - {self.name}"
 
     def save(self, *args, **kwargs):
+        """Save the subject with the code in uppercase."""
         self.code = self.code.upper()
         super().save(*args, **kwargs)
 
 
 class Weekday(models.Model):
+    """Model for the weekdays."""
+
     id = models.AutoField(primary_key=True, unique=True, editable=False)
     name = models.CharField(max_length=10, unique=True)
 
@@ -100,6 +114,8 @@ class Weekday(models.Model):
 
 
 class Selection(models.Model):
+    """Model for the selections."""
+
     id = models.UUIDField(
         primary_key=True, default=uuid4, unique=True, editable=False
     )
@@ -115,6 +131,8 @@ class Selection(models.Model):
 
 
 class SubjectSection(models.Model):
+    """Model for the section of subject attached to selection."""
+
     id = models.AutoField(primary_key=True, unique=True, editable=False)
     selection = models.ForeignKey(Selection, on_delete=models.CASCADE)
     section = models.IntegerField(default=1, validators=[MinValueValidator(0)])
@@ -127,6 +145,8 @@ class SubjectSection(models.Model):
 
 
 class SectionSchedule(models.Model):
+    """Model for the schedule of a section."""
+
     id = models.AutoField(primary_key=True, unique=True, editable=False)
     section = models.ForeignKey(SubjectSection, on_delete=models.CASCADE)
     weekday = models.ForeignKey(Weekday, on_delete=models.SET_NULL, null=True)

@@ -1,3 +1,5 @@
+"""User serializers."""
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
@@ -8,6 +10,8 @@ from rest_framework_simplejwt.serializers import (
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Serializer for User"""
+
     class Meta:
         model = get_user_model()
         fields = [
@@ -30,9 +34,13 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        """Create a new user with encrypted password and return it"""
+
         return get_user_model().objects.create(**validated_data)
 
     def update(self, instance, validated_data):
+        """Update a user, setting the password correctly and return it"""
+
         password = validated_data.pop("password", None)
         user = super().update(instance, validated_data)
 
@@ -44,7 +52,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class PairTokenSerializer(TokenObtainPairSerializer):
+    """Serializer for TokenObtainPair"""
+
     def validate(self, attrs):
+        """Validate the data before saving it"""
         try:
             data = super().validate(attrs)
             response = {
@@ -68,7 +79,10 @@ class PairTokenSerializer(TokenObtainPairSerializer):
 
 
 class RefreshTokenSerializer(RefreshToken):
+    """Serializer for RefreshToken"""
+
     def validate(self, attrs):
+        """Validate the data before saving it"""
         try:
             data = super().validate(attrs)
             response = {

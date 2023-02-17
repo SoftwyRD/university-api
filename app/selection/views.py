@@ -1,6 +1,4 @@
-"""
-Selection views
-"""
+"""Selection views"""
 
 from django.urls import reverse
 from rest_framework import status
@@ -24,6 +22,7 @@ def subject_section_location_url(selection_id, subject_section_id):
 
 
 def selection_location_url(selection_id):
+    """Get reverse url for selection details"""
     return reverse("selection:selection-detail", args=[selection_id])
 
 
