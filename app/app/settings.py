@@ -182,10 +182,19 @@ AUTH_USER_MODEL = "core.User"
 
 CORS_ALLOWED_ORIGINS = []
 
+
 SPECTACULAR_SETTINGS = {
     "TITLE": "University-API",
     "DESCRIPTION": "Api which lets create a simulation of university subject selection",
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    # "COMPONENT_SPLIT_REQUEST": True,
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "filter": True,
+        "displayRequestDuration": True,
+        "syntaxHighlight.activate": True,
+        "syntaxHighlight.theme": "monokai",
+    },
     # OTHER SETTINGS
 }

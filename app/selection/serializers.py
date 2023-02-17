@@ -69,21 +69,21 @@ class SubjectSectionSerializer(ModelSerializer):
         subject_section = SubjectSection.objects.create(**validated_data)
         return subject_section
 
-    def get_selection(self, obj):
+    def get_selection(self, obj) -> str:
         selection = obj.selection
         serializer = SelectionSerializer(selection, many=False)
         data = serializer.data
         selection = data["name"]
         return selection
 
-    def get_subject_code(self, obj):
+    def get_subject_code(self, obj) -> str:
         subject = obj.subject
         serializer = SubjectSerializer(subject, many=False)
         data = serializer.data
         subject_code = data["code"]
         return subject_code
 
-    def get_subject_name(self, obj):
+    def get_subject_name(self, obj) -> str:
         subject = obj.subject
         serializer = SubjectSerializer(subject, many=False)
         data = serializer.data

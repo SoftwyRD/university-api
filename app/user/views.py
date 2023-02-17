@@ -1,3 +1,8 @@
+"""
+User views
+
+"""
+
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
@@ -12,25 +17,46 @@ from user import serializers
 from user.permissions import PublicPostRequest
 from drf_spectacular.utils import extend_schema
 
+schema_name = "user"
+
 
 def user_location_url(user_id):
+    """Get reverse url for user details"""
     return reverse("user:details", args=[user_id])
 
 
+@extend_schema(
+    tags=[schema_name],
+)
 class PairTokenView(TokenObtainPairView):
+    """View for getting acces and refresh token for user"""
+
     serializer_class = serializers.PairTokenSerializer
 
 
+@extend_schema(
+    tags=[schema_name],
+)
 class RefreshTokenView(TokenRefreshView):
+    """View for refreshing access token for user"""
+
     serializer_class = serializers.RefreshTokenSerializer
 
 
+@extend_schema(tags=[schema_name])
 class UserListView(APIView):
+    """View for list users in api"""
+
     permission_classes = [PublicPostRequest]
     serializer_class = serializers.UserSerializer
 
-    @extend_schema(request=None, responses=serializers.UserSerializer)
+    @extend_schema(
+        request=None,
+        responses=serializers.UserSerializer,
+        operation_id="users_list_retrieve",
+    )
     def get(self, request, format=None):
+        """Get all users"""
         try:
             users = get_user_model().objects.all()
             serializer = self.serializer_class(users, many=True)
@@ -53,8 +79,10 @@ class UserListView(APIView):
     @extend_schema(
         request=serializers.UserSerializer,
         responses=serializers.UserSerializer,
+        operation_id="user_create",
     )
     def post(self, request, format=None):
+        """Create new user"""
         try:
             data = request.data
             serializer = self.serializer_class(data=data, many=False)
@@ -93,12 +121,20 @@ class UserListView(APIView):
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+@extend_schema(tags=[schema_name])
 class UserDetailsView(APIView):
+    """View for user details in api"""
+
     permission_classes = [IsAdminUser]
     serializer_class = serializers.UserSerializer
 
-    @extend_schema(request=None, responses=serializers.UserSerializer)
+    @extend_schema(
+        request=None,
+        responses=serializers.UserSerializer,
+        operation_id="user_details_retrieve",
+    )
     def get(self, request, id, format=None):
+        """Get user details"""
         try:
             user = get_user_model().objects.get(id=id)
             serializer = self.serializer_class(user, many=False)
@@ -120,8 +156,10 @@ class UserDetailsView(APIView):
     @extend_schema(
         request=serializers.UserSerializer,
         responses=serializers.UserSerializer,
+        operation_id="user_update",
     )
     def patch(self, request, id, format=None):
+        """Update user details"""
         try:
             data = request.data
             user = get_user_model().objects.get(id=id)
@@ -154,7 +192,13 @@ class UserDetailsView(APIView):
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @extend_schema(
+        request=None,
+        responses=None,
+        operation_id="user_delete",
+    )
     def delete(self, request, id, format=None):
+        """Delete user"""
         try:
             user = get_user_model().objects.get(id=id)
             user.delete()
@@ -168,12 +212,20 @@ class UserDetailsView(APIView):
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+@extend_schema(tags=[schema_name])
 class MeView(APIView):
+    """View for logged user details in api"""
+
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.UserSerializer
 
-    @extend_schema(request=None, responses=serializers.UserSerializer)
+    @extend_schema(
+        request=None,
+        responses=serializers.UserSerializer,
+        operation_id="me_retrieve",
+    )
     def get(self, request, format=None):
+        """Get logged user details"""
         user = request.user
         serializer = self.serializer_class(user, many=False)
         response = {
@@ -187,8 +239,10 @@ class MeView(APIView):
     @extend_schema(
         request=serializers.UserSerializer,
         responses=serializers.UserSerializer,
+        operation_id="me_update",
     )
     def patch(self, request, format=None):
+        """Update logged user details"""
         try:
             data = request.data
             user = request.user

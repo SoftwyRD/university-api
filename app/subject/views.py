@@ -1,3 +1,7 @@
+"""
+Views for subject app
+"""
+
 from rest_framework import status, views
 from rest_framework.response import Response
 from rest_framework.permissions import (
@@ -10,20 +14,31 @@ from core.models import Subject as SubjectModel
 from subject.serializers import SubjectSerializer
 from drf_spectacular.utils import extend_schema
 
+schema_name = "subject"
+
 
 class ReadOnly(BasePermission):
+    """Allow only read-only requests"""
+
     def has_permission(self, request, view):
+        """Check if request is read-only"""
         return request.method in SAFE_METHODS
 
 
+@extend_schema(tags=[schema_name])
 class SubjectsListView(views.APIView):
     """View for list subjects in api"""
 
     permission_classes = [IsAdminUser | ReadOnly]
     serializer_class = SubjectSerializer
 
-    @extend_schema(request=None, responses=SubjectSerializer)
+    @extend_schema(
+        request=None,
+        responses=SubjectSerializer,
+        operation_id="subjects_list_retrieve",
+    )
     def get(self, req, format=None):
+        """Get all subjects"""
         try:
             subjects = SubjectModel.objects.all()
             serializer = self.serializer_class(subjects, many=True)
@@ -42,8 +57,13 @@ class SubjectsListView(views.APIView):
             }
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @extend_schema(request=SubjectSerializer, responses=SubjectSerializer)
+    @extend_schema(
+        request=SubjectSerializer,
+        responses=SubjectSerializer,
+        operation_id="subject_create",
+    )
     def post(self, req, format=None):
+        """Create new subject"""
         try:
             data = req.data
             serializer = self.serializer_class(data=data, many=False)
@@ -77,6 +97,7 @@ class SubjectsListView(views.APIView):
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+@extend_schema(tags=[schema_name])
 class SubjectDetailView(views.APIView):
     """
     View for GET, PUT and PATCH subject details
@@ -85,8 +106,13 @@ class SubjectDetailView(views.APIView):
     permission_classes = [IsAdminUser | ReadOnly]
     serializer_class = SubjectSerializer
 
-    @extend_schema(request=None, responses=SubjectSerializer)
+    @extend_schema(
+        request=None,
+        responses=SubjectSerializer,
+        operation_id="subject_details_retrieve",
+    )
     def get(self, req, id, format=None):
+        """Get subject details"""
         try:
             if SubjectModel.objects.filter(id=id):
                 subject = SubjectModel.objects.get(id=id)
@@ -118,8 +144,13 @@ class SubjectDetailView(views.APIView):
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @extend_schema(request=SubjectSerializer, responses=SubjectSerializer)
+    @extend_schema(
+        request=SubjectSerializer,
+        responses=SubjectSerializer,
+        operation_id="subject_update",
+    )
     def patch(self, req, id, format=None):
+        """Update subject details"""
         try:
             if SubjectModel.objects.filter(id=id):
                 subject = SubjectModel.objects.get(id=id)
@@ -159,7 +190,13 @@ class SubjectDetailView(views.APIView):
 
             return Response(response, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    @extend_schema(
+        request=None,
+        responses=None,
+        operation_id="subject_delete",
+    )
     def delete(self, req, id, format=None):
+        """Delete subject"""
         try:
             if SubjectModel.objects.filter(id=id):
                 subject = SubjectModel.objects.get(id=id)
