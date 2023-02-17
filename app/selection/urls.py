@@ -19,6 +19,6 @@ urlpatterns = [
     path(
         "<uuid:selection_id>/subjects/<int:subject_section_id>/",
         views.SubjectSectionDetailsView.as_view(),
-        name="subject-details",
+        name="subject-detail",
     ),
 ]
