@@ -2,6 +2,7 @@
 Views for subject app
 """
 
+from django.urls import reverse
 from rest_framework import status, views
 from rest_framework.response import Response
 from rest_framework.permissions import (
@@ -15,6 +16,10 @@ from subject.serializers import SubjectSerializer
 from drf_spectacular.utils import extend_schema
 
 schema_name = "subject"
+
+
+def subject_location_url(id):
+    return reverse("subject:subject-detail", args=[id])
 
 
 class ReadOnly(BasePermission):
@@ -72,13 +77,19 @@ class SubjectsListView(views.APIView):
                 serializer.save()
                 subject = serializer.data
 
+                headers = {
+                    "Location": subject_location_url(subject["id"]),
+                }
+
                 response = {
                     "status": "success",
                     "data": {
                         "subject": subject,
                     },
                 }
-                return Response(response, status.HTTP_201_CREATED)
+                return Response(
+                    response, status.HTTP_201_CREATED, headers=headers
+                )
 
             response = {
                 "status": "fail",

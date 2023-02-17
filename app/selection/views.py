@@ -19,8 +19,12 @@ schema_name = "selection"
 def subject_section_location_url(selection_id, subject_section_id):
     """Get reverse url for subject section details"""
     return reverse(
-        "selection:subject-details", args=[selection_id, subject_section_id]
+        "selection:subject-detail", args=[selection_id, subject_section_id]
     )
+
+
+def selection_location_url(selection_id):
+    return reverse("selection:selection-detail", args=[selection_id])
 
 
 @extend_schema(tags=[schema_name])
@@ -315,13 +319,19 @@ class SelectionListView(APIView):
 
                 selection = serializer.data
 
+                headers = {
+                    "Location": selection_location_url(selection["id"]),
+                }
+
                 response = {
                     "status": "success",
                     "data": {
                         "selection": selection,
                     },
                 }
-                return Response(response, status.HTTP_201_CREATED)
+                return Response(
+                    response, status.HTTP_201_CREATED, headers=headers
+                )
 
             response = {
                 "status": "fail",

@@ -90,6 +90,7 @@ class SelectionTestsAuthorized(APITestCase):
             res.data["data"]["selection"]["name"], payload["name"]
         )
         self.assertEqual(res.data["data"]["selection"]["user"], self.user.id)
+        self.assertIn("Location", res)
 
     def test_post_selection_different_users(self):
         payload = {

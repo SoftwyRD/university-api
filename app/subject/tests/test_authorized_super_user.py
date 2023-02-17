@@ -40,6 +40,7 @@ class AuthorizedTests(APITestCase):
         res = self.client.post(SUBJECTS_URL, self.payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertIn("Location", res)
 
     def test_create_subject_with_repeated_code(self):
         res1 = self.client.post(SUBJECTS_URL, self.payload)
