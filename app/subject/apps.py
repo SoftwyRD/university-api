@@ -1,0 +1,8 @@
+"""Subject app config."""
+
+from django.apps import AppConfig
+
+
+class SubjectConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "subject"
