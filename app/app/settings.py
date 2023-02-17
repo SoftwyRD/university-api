@@ -182,10 +182,12 @@ AUTH_USER_MODEL = "core.User"
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://softwy.com:81",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
+    "http://softwy.com:81",
 ]
 
 SPECTACULAR_SETTINGS = {
