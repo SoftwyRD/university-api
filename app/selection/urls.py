@@ -1,3 +1,5 @@
+"""Selection URL Configuration"""
+
 from selection import views
 from rest_framework.urls import path
 
@@ -7,7 +9,7 @@ app_name = "selection"
 urlpatterns = [
     path("", views.SelectionListView.as_view(), name="selection-list"),
     path(
-        "<str:id>",
+        "<uuid:id>",
         views.SelectionDetailView.as_view(),
         name="selection-detail",
     ),
@@ -19,6 +21,6 @@ urlpatterns = [
     path(
         "<uuid:selection_id>/subjects/<int:subject_section_id>/",
         views.SubjectSectionDetailsView.as_view(),
-        name="subject-details",
+        name="subject-detail",
     ),
 ]

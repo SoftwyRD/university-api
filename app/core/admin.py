@@ -1,12 +1,13 @@
+"""Admin for project."""
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from core import models
 
 
-# Register your models here.
-
-
 class UserAdmin(BaseUserAdmin):
+    """Fields to be displayed in the admin panel."""
+
     ordering = ["id"]
     list_display = ["username", "email"]
     fieldsets = (

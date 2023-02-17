@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
-import environ, os
+import environ
+import os
 
 env = environ.Env()
 env.read_env()
@@ -179,12 +180,26 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "core.User"
 
-CORS_ALLOWED_ORIGINS = []
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+]
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Your Project API",
-    "DESCRIPTION": "Your project description",
-    "VERSION": "1.0.0",
+    "TITLE": "University-API",
+    "DESCRIPTION": "Api which lets create a simulation of university subject selection",
+    "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    # "COMPONENT_SPLIT_REQUEST": True,
+    "SWAGGER_UI_SETTINGS": {
+        "deepLinking": True,
+        "filter": True,
+        "displayRequestDuration": True,
+        "syntaxHighlight.activate": True,
+        "syntaxHighlight.theme": "monokai",
+    },
     # OTHER SETTINGS
 }

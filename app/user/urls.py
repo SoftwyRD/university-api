@@ -1,3 +1,5 @@
+"""User URLs."""
+
 from rest_framework.urls import path
 from user import views
 
