@@ -18,7 +18,7 @@ class SelectionSerializer(ModelSerializer):
     Selection Serializer
     """
 
-    user = MyField()
+    # user = MyField()
 
     class Meta:
         model = SelectionModel
