@@ -308,14 +308,12 @@ class SelectionListView(APIView):
     def post(self, req, format=None):
         """Create a new selection for a user"""
         try:
-            selection = {
-                "user": req.user.id,
-                "name": req.data["name"],
-            }
-            serializer = self.serializer_class(data=selection, many=False)
+            data = req.data
+
+            serializer = self.serializer_class(data=data, many=False)
 
             if serializer.is_valid():
-                serializer.save()
+                serializer.save(user=req.user)
 
                 selection = serializer.data
 

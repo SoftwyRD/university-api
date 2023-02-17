@@ -1,29 +1,21 @@
+"""Selection Serializers"""
+
 from core.models import SubjectSection, Subject, Selection as SelectionModel
 from rest_framework.serializers import (
     ModelSerializer,
     SerializerMethodField,
-    Field,
 )
-from drf_spectacular.utils import extend_schema_field
-from drf_spectacular.types import OpenApiTypes
-
-
-@extend_schema_field(OpenApiTypes.NONE)
-class MyField(Field):
-    pass
 
 
 class SelectionSerializer(ModelSerializer):
-    """
-    Selection Serializer
-    """
-
-    # user = MyField()
+    """Serializer for Selection"""
 
     class Meta:
+        """Meta class for Selection Serializer"""
+
         model = SelectionModel
         fields = "__all__"
-        read_only_fields = ["id", "created_on"]
+        read_only_fields = ["id", "created_on", "user"]
 
 
 class SubjectSerializer(ModelSerializer):
