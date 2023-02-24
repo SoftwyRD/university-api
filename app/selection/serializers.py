@@ -67,6 +67,15 @@ class SubjectSectionSerializer(ModelSerializer):
         subject_section = SubjectSection.objects.create(**validated_data)
         return subject_section
 
+    def update(self, instance, validated_data):
+        """Update de subject section"""
+
+        subject_id = validated_data["subject"]
+        subject = Subject.objects.get(id=subject_id)
+        validated_data["subject"] = subject
+
+        return super().update(instance, validated_data)
+
     def get_selection(self, obj) -> str:
         """Get the selection name"""
 
