@@ -25,6 +25,7 @@ def user_location_url(user_id):
 
 @extend_schema(
     tags=[schema_name],
+    request=serializers.PairTokenSerializer,
 )
 class PairTokenView(TokenObtainPairView):
     """View for getting acces and refresh token for user"""
@@ -34,6 +35,7 @@ class PairTokenView(TokenObtainPairView):
 
 @extend_schema(
     tags=[schema_name],
+    request=serializers.RefreshTokenSerializer,
 )
 class RefreshTokenView(TokenRefreshView):
     """View for refreshing access token for user"""
