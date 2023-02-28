@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import (
     TokenObtainPairSerializer,
-    RefreshToken,
+    TokenRefreshSerializer,
 )
 
 
@@ -78,7 +78,7 @@ class PairTokenSerializer(TokenObtainPairSerializer):
             raise AuthenticationFailed(response)
 
 
-class RefreshTokenSerializer(RefreshToken):
+class RefreshTokenSerializer(TokenRefreshSerializer):
     """Serializer for RefreshToken"""
 
     def validate(self, attrs):
