@@ -192,7 +192,6 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Api which lets create a simulation of university subject selection",
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
-    # "COMPONENT_SPLIT_REQUEST": True,
     "SWAGGER_UI_SETTINGS": {
         "deepLinking": True,
         "filter": True,
@@ -200,5 +199,4 @@ SPECTACULAR_SETTINGS = {
         "syntaxHighlight.activate": True,
         "syntaxHighlight.theme": "monokai",
     },
-    # OTHER SETTINGS
 }

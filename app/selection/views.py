@@ -98,11 +98,10 @@ class SubjectSectionListView(APIView):
                 return Response(response, status=status.HTTP_404_NOT_FOUND)
 
             data = request.data
-            data["selection"] = selection
 
             serializer = self.serializer_class(data=data, many=False)
             if serializer.is_valid():
-                serializer.save()
+                serializer.save(selection=selection)
                 subject_section = serializer.data
 
                 headers = {

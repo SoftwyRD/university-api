@@ -70,10 +70,14 @@ class SubjectSectionSerializer(ModelSerializer):
     def update(self, instance, validated_data):
         """Update de subject section"""
 
+        selection_id = validated_data["selection"]
+        selection = SelectionModel.objects.get(id=selection_id)
+
         subject_id = validated_data["subject"]
         subject = Subject.objects.get(id=subject_id)
-        validated_data["subject"] = subject
 
+        validated_data["selection"] = selection
+        validated_data["subject"] = subject
         return super().update(instance, validated_data)
 
     def get_selection(self, obj) -> str:
