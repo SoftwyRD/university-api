@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "selection",
     "subject",
     "user",
+    "schedule",
 ]
 
 REST_FRAMEWORK = {
